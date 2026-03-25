@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百家樂荷官培訓系統 V4.0</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --dark: #0D1117;
+    --dark2: #161B22;
+    --green: #0A3D2B;
+    --green2: #0F4C3A;
+    --red: #8B1A1A;
+    --blue: #1A3A5C;
+    --felt: #0F4C3A;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--dark);
+    color: #E8E0D0;
+    margin: 0;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  #sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 220px; height: 100vh;
+    background: var(--dark2);
+    border-right: 1px solid rgba(201,168,76,0.2);
+    display: flex; flex-direction: column;
+    z-index: 100; overflow-y: auto;
+    transition: transform 0.3s;
+  }
+  #sidebar .logo {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    font-family: 'Noto Serif TC', serif;
+  }
+  #sidebar .logo-title { color: var(--gold); font-size: 15px; font-weight: 900; letter-spacing: 2px; }
+  #sidebar .logo-sub { color: #888; font-size: 10px; margin-top: 2px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px; font-size: 13px; color: #9CA3AF;
+    cursor: pointer; transition: all 0.2s;
+    border: none; border-left: 3px solid transparent;
+    background: none; width: 100%; text-align: left;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-decoration: none;
+  }
+  .nav-item:hover, .nav-item.active {
+    color: var(--gold); background: rgba(201,168,76,0.07);
+    border-left-color: var(--gold);
+  }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-section-label {
+    padding: 14px 16px 4px; font-size: 9px; letter-spacing: 2px;
+    color: #555; text-transform: uppercase;
+  }
+
+  /* ── MAIN CONTENT ── */
+  #main { margin-left: 220px; min-height: 100vh; }
+
+  /* ── HERO ── */
+  #hero {
+    background: linear-gradient(135deg, #0A1F10 0%, #0D2E1A 40%, #0A1520 100%);
+    padding: 70px 60px 60px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    position: relative; overflow: hidden;
+  }
+  #hero::before {
+    content: '♠ ♥ ♦ ♣';
+    position: absolute; right: 40px; top: 30px;
+    font-size: 60px; color: rgba(201,168,76,0.05);
+    letter-spacing: 20px; pointer-events: none;
+  }
+  #hero h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px; font-weight: 900;
+    color: var(--gold); margin: 0 0 12px;
+    text-shadow: 0 0 40px rgba(201,168,76,0.3);
+  }
+  #hero p { color: #9CA3AF; font-size: 15px; max-width: 580px; line-height: 1.7; margin: 0 0 24px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px;
+    border: 1px solid rgba(201,168,76,0.4); color: var(--gold); margin-right: 8px;
+    background: rgba(201,168,76,0.05);
+  }
+
+  /* ── SECTIONS ── */
+  .section { padding: 50px 60px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .section:last-child { border-bottom: none; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+  }
+  .section-num {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8B6914);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; color: #0D1117; flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 700; color: #F0EAD6;
+    margin: 0;
+  }
+  .section-desc { color: #9CA3AF; font-size: 13.5px; line-height: 1.7; margin: 0 0 24px; }
+
+  /* ── SCROLL MARGIN for sections ── */
+  section[id] { scroll-margin-top: 20px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--dark2); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 22px; margin-bottom: 16px;
+  }
+  .card-gold { border-color: rgba(201,168,76,0.3); }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--gold); margin: 0 0 12px; }
+
+  /* ── TABLES ── */
+  .styled-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .styled-table th {
+    background: var(--green2); color: var(--gold);
+    padding: 10px 12px; text-align: center; font-weight: 700;
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+  .styled-table td {
+    padding: 9px 12px; border: 1px solid rgba(255,255,255,0.06);
+    text-align: center; color: #D1C9B8;
+  }
+  .styled-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+  .styled-table tr:hover td { background: rgba(201,168,76,0.05); }
+
+  /* ── PLAYING CARDS ── */
+  .playing-card {
+    width: 56px; height: 80px; background: white; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+    border: 1px solid #DDD; flex-shrink: 0;
+  }
+  .card-red { color: #C0392B; }
+  .card-black { color: #1A1A2E; }
+
+  /* ── COMMISSION CALCULATOR ── */
+  #calc-input {
+    background: #0D1117; border: 2px solid rgba(201,168,76,0.4);
+    color: var(--gold); font-size: 28px; font-weight: 700;
+    padding: 12px 20px; border-radius: 8px; width: 100%;
+    text-align: right; outline: none; font-family: monospace;
+  }
+  #calc-input:focus { border-color: var(--gold); }
+  .calc-btn {
+    padding: 14px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
+    color: #E8E0D0; font-size: 18px; cursor: pointer; transition: all 0.15s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .calc-btn:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold); }
+  .calc-btn.op { color: var(--gold); font-weight: 700; }
+  .calc-btn.clear { background: rgba(139,26,26,0.2); border-color: rgba(139,26,26,0.4); color: #F87171; }
+  .calc-btn.equals { background: linear-gradient(135deg, var(--gold), #8B6914); color: #0D1117; font-weight: 900; }
+  .result-box {
+    background: linear-gradient(135deg, rgba(10,61,43,0.6), rgba(13,17,23,0.8));
+    border: 1px solid rgba(201,168,76,0.3); border-radius: 10px;
+    padding: 20px; text-align: center;
+  }
+  .result-label { font-size: 11px; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .result-value { font-size: 32px; font-weight: 900; font-family: monospace; }
+
+  /* ── BACCARAT TABLE DIAGRAM ── */
+  .bacc-table {
+    background: var(--felt);
+    border-radius: 16px; padding: 20px;
+    border: 4px solid rgba(201,168,76,0.4);
+    position: relative;
+  }
+  .bet-zone {
+    border-radius: 8px; padding: 14px 10px;
+    text-align: center; font-weight: 700; font-size: 13px;
+    cursor: default; transition: all 0.2s; margin: 6px 0;
+    position: relative;
+  }
+  .bet-zone:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(201,168,76,0.3); }
+  .zone-banker { background: rgba(26,58,92,0.8); border: 2px solid #4A90D9; color: #7BC8FF; }
+  .zone-player { background: rgba(139,26,26,0.7); border: 2px solid #E07070; color: #FFA0A0; }
+  .zone-tie { background: rgba(10,61,43,0.9); border: 2px dashed rgba(201,168,76,0.6); color: var(--gold); }
+  .zone-pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .zone-pair { background: rgba(80,0,120,0.5); border: 2px solid #8B5CF6; color: #C4B5FD; font-size: 11px; padding: 10px 6px; }
+  .zone-label { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+  .dealer-side { text-align: center; font-size: 10px; color: var(--gold); opacity: 0.7; margin-bottom: 6px; letter-spacing: 2px; }
+  .player-side { text-align: center; font-size: 10px; color: var(--gold); opacity: 0.7; margin-top: 6px; letter-spacing: 2px; }
+
+  /* ── DRAWING MATRIX ── */
+  .matrix-cell {
+    padding: 8px 4px; border: 1px solid rgba(255,255,255,0.08);
+    text-align: center; font-size: 12px; font-weight: 700;
+    transition: all 0.15s; cursor: default;
+  }
+  .matrix-cell:hover { transform: scale(1.15); z-index: 10; position: relative; border-radius: 4px; }
+  .draw { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+  .stand { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+  .natural { background: rgba(201,168,76,0.2); color: var(--gold); }
+
+  /* ── CHIP COLORS ── */
+  .chip {
+    display: inline-block; width: 40px; height: 40px; border-radius: 50%;
+    font-size: 9px; font-weight: 900; text-align: center; line-height: 40px;
+    border: 3px dashed rgba(255,255,255,0.4); flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  }
+  .chip-red    { background: #C0392B; color: white; }
+  .chip-green  { background: #27AE60; color: white; }
+  .chip-black  { background: #1A1A2E; color: white; border-color: rgba(255,255,255,0.3); }
+  .chip-purple { background: #8E44AD; color: white; }
+  .chip-orange { background: #E67E22; color: white; }
+
+  /* ── ROLLING CHIPS ── */
+  .rc-flow {
+    display: flex; align-items: flex-start; gap: 0; position: relative;
+  }
+  .rc-step {
+    flex: 1; padding: 16px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; text-align: center;
+    position: relative; font-size: 12px;
+  }
+  .rc-step + .rc-step::before {
+    content: '→'; position: absolute;
+    left: -12px; top: 50%; transform: translateY(-50%);
+    color: var(--gold); font-size: 16px;
+  }
+  .rc-step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gold); color: #0D1117;
+    font-weight: 900; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 8px;
+  }
+  .rc-step-title { font-weight: 700; color: var(--gold); font-size: 12px; margin-bottom: 4px; }
+  .rc-step-desc { color: #9CA3AF; font-size: 11px; line-height: 1.5; }
+
+  /* ── SOP TIMELINE ── */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -26px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--gold); border: 2px solid var(--dark2);
+  }
+  .tl-title { font-weight: 700; color: #F0EAD6; font-size: 13.5px; margin-bottom: 4px; }
+  .tl-desc { color: #9CA3AF; font-size: 12.5px; line-height: 1.6; }
+
+  /* ── QUIZ ── */
+  .quiz-opt {
+    display: block; width: 100%; text-align: left;
+    padding: 14px 18px; border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: #D1C9B8; font-size: 13.5px; cursor: pointer;
+    transition: all 0.15s; margin-bottom: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .quiz-opt:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+  .quiz-opt.correct { border-color: #10B981; background: rgba(16,185,129,0.15); color: #6EE7B7; }
+  .quiz-opt.wrong   { border-color: #EF4444; background: rgba(239,68,68,0.15); color: #FCA5A5; }
+  .quiz-opt.reveal  { border-color: #10B981; background: rgba(16,185,129,0.08); color: #A7F3D0; border-style: dashed; }
+
+  .progress-bar {
+    height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--gold), #F0D080);
+    border-radius: 2px; transition: width 0.4s;
+  }
+
+  /* ── PILL TAGS ── */
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 700; margin: 2px;
+  }
+  .pill-green  { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+  .pill-red    { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+  .pill-gold   { background: rgba(201,168,76,0.2); color: var(--gold); }
+  .pill-blue   { background: rgba(59,130,246,0.2); color: #93C5FD; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-220px); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    .section { padding: 30px 20px; }
+    #hero { padding: 50px 20px 40px; }
+    #hero h1 { font-size: 24px; }
+    .rc-flow { flex-direction: column; gap: 10px; }
+    .rc-step + .rc-step::before { display: none; }
+  }
+
+  .menu-toggle {
+    display: none; position: fixed; top: 14px; left: 14px;
+    z-index: 200; background: var(--gold); color: #0D1117;
+    border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer;
+    font-size: 18px; font-weight: 900;
+  }
+  @media (max-width: 768px) { .menu-toggle { display: block; } }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .tag-warn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px;
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px; color: #FCA5A5; font-size: 12.5px; margin: 4px 0; width: 100%; }
+  .tag-ok { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px;
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 8px; color: #6EE7B7; font-size: 12.5px; margin: 4px 0; width: 100%; }
+
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 24px 0; }
+
+  /* section highlight on scroll */
+  .highlight-section { animation: flashSection 0.6s; }
+  @keyframes flashSection {
+    0%,100% { background: transparent; }
+    50% { background: rgba(201,168,76,0.04); }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<!-- ── SIDEBAR ── -->
+<nav id="sidebar">
+  <div class="logo">
+    <div class="logo-title">♠ BACCARAT<br>ACADEMY</div>
+    <div class="logo-sub">荷官培訓系統 V4.0</div>
+  </div>
+
+  <div class="nav-section-label">基礎知識</div>
+  <button class="nav-item" onclick="goTo('s1')"><span class="icon">🃏</span>基礎規則與機率</button>
+  <button class="nav-item" onclick="goTo('s2')"><span class="icon">📋</span>補牌矩陣</button>
+
+  <div class="nav-section-label">桌面操作</div>
+  <button class="nav-item" onclick="goTo('s3')"><span class="icon">🔄</span>發牌流程 SOP</button>
+  <button class="nav-item" onclick="goTo('s4')"><span class="icon">✋</span>手勢與下注規範</button>
+  <button class="nav-item" onclick="goTo('s5')"><span class="icon">💰</span>賠率與結算</button>
+
+  <div class="nav-section-label">抽水心算</div>
+  <button class="nav-item" onclick="goTo('s6')"><span class="icon">🧮</span>心算計算機</button>
+  <button class="nav-item" onclick="goTo('s7')"><span class="icon">🎯</span>四大計算策略</button>
+  <button class="nav-item" onclick="goTo('s8')"><span class="icon">📊</span>Breakage進位規則</button>
+
+  <div class="nav-section-label">進階制度</div>
+  <button class="nav-item" onclick="goTo('s9')"><span class="icon">♟</span>免佣百家樂</button>
+  <button class="nav-item" onclick="goTo('s10')"><span class="icon">🔵</span>活碼與洗碼量</button>
+  <button class="nav-item" onclick="goTo('s11')"><span class="icon">🛡</span>異常狀況處理</button>
+
+  <div class="nav-section-label">考核</div>
+  <button class="nav-item" onclick="goTo('s12')"><span class="icon">📝</span>實戰測驗</button>
+</nav>
+
+<!-- ── MAIN ── -->
+<div id="main">
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="badge">完整版</div>
+    <div class="badge">10大章節</div>
+    <div class="badge">互動式</div>
+    <h1>百家樂荷官培訓教材</h1>
+    <p>涵蓋基礎規則、補牌矩陣、抽水心算、活碼制度與實戰測驗。<br>專為新進荷官設計的完整互動式培訓系統。</p>
+  </header>
+
+  <!-- ── S1: 基礎規則 ── -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2 class="section-title">基礎規則與機率背景</h2>
+    </div>
+    <p class="section-desc">百家樂的所有決策由固定規則驅動，與玩家意志無關。荷官只需執行規則，無需判斷。</p>
+
+    <!-- Card Values -->
+    <div class="card card-gold" style="margin-bottom:16px">
+      <div class="card-title">牌值對照</div>
+      <div class="grid-3" style="gap:12px">
+        <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:12px">
+            <div class="playing-card card-black">A♠</div>
+          </div>
+          <div style="color:var(--gold);font-weight:700;font-size:18px">1 點</div>
+          <div style="color:#666;font-size:12px;margin-top:4px">所有 Ace</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px">
+            <div class="playing-card card-red">2♥</div>
+            <div class="playing-card card-black" style="font-size:14px">…</div>
+            <div class="playing-card card-black">9♣</div>
+          </div>
+          <div style="color:var(--gold);font-weight:700;font-size:18px">面值點數</div>
+          <div style="color:#666;font-size:12px;margin-top:4px">2 ~ 9 依牌面</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div style="display:flex;justify-content:center;gap:4px;margin-bottom:12px">
+            <div class="playing-card card-red" style="font-size:14px">10♦</div>
+            <div class="playing-card card-black" style="font-size:14px">J♠</div>
+            <div class="playing-card card-red" style="font-size:14px">Q♥</div>
+            <div class="playing-card card-black" style="font-size:14px">K♣</div>
+          </div>
+          <div style="color:var(--gold);font-weight:700;font-size:18px">0 點</div>
+          <div style="color:#666;font-size:12px;margin-top:4px">10 / J / Q / K</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px 16px;background:rgba(201,168,76,0.08);border-left:3px solid var(--gold);border-radius:0 6px 6px 0">
+        <span style="color:var(--gold);font-weight:700">💡 個位數規則：</span>
+        <span style="color:#B8B0A0;font-size:13px">總和超過9只取個位數。例：8+7=15 → <strong style="color:var(--gold)">5點</strong>；9+9=18 → <strong style="color:var(--gold)">8點</strong></span>
+      </div>
+    </div>
+
+    <!-- Odds Table -->
+    <div class="card">
+      <div class="card-title">勝率與賭場優勢（8副牌標準局）</div>
+      <table class="styled-table">
+        <tr>
+          <th>投注選擇</th><th>勝出機率</th><th>排除和局後</th><th>賠率</th><th>賭場優勢</th><th>建議</th>
+        </tr>
+        <tr>
+          <td style="color:#7BC8FF;font-weight:700">莊（Banker）</td>
+          <td>45.86%</td><td>50.68%</td><td>1:1（扣5%）</td>
+          <td><span class="pill pill-green">1.06%</span></td>
+          <td style="color:#6EE7B7;font-weight:700">★ 最佳</td>
+        </tr>
+        <tr>
+          <td style="color:#FFA0A0;font-weight:700">閒（Player）</td>
+          <td>44.62%</td><td>49.32%</td><td>1:1</td>
+          <td><span class="pill pill-green">1.24%</span></td>
+          <td style="color:#A7F3D0">次佳</td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold);font-weight:700">和（Tie）</td>
+          <td>9.52%</td><td>—</td><td>1:8</td>
+          <td><span class="pill pill-red">14.36%</span></td>
+          <td style="color:#FCA5A5">不建議</td>
+        </tr>
+      </table>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:12px;color:#888">
+        ⚠ 荷官須知：5%抽水的存在是為了補償莊家天生的機率優勢。若無抽水，精明的玩家會無限押莊，賭場將長期虧損。
+      </div>
+    </div>
+
+    <!-- Natural -->
+    <div class="card" style="border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.05)">
+      <div class="card-title">⭐ 天牌（Natural）— 最高優先處理</div>
+      <div class="grid-2">
+        <div style="padding:14px;background:rgba(201,168,76,0.1);border-radius:8px;text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--gold)">9</div>
+          <div style="font-weight:700;color:#F0EAD6;margin:4px 0">Natural 9 — 至尊九</div>
+          <div style="font-size:12px;color:#888">直接獲勝（除非對手同樣9點 → 和局）</div>
+        </div>
+        <div style="padding:14px;background:rgba(201,168,76,0.08);border-radius:8px;text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--gold-light)">8</div>
+          <div style="font-weight:700;color:#F0EAD6;margin:4px 0">Natural 8 — 至尊八</div>
+          <div style="font-size:12px;color:#888">獲勝（除非對手為9點 → 輸）</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:12.5px;color:#9CA3AF">
+        天牌出現時 → 雙方立即停止發牌，直接比大小結算，任何人不得再補牌。
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S2: 補牌矩陣 ── -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2 class="section-title">第三張牌補牌矩陣</h2>
+    </div>
+    <p class="section-desc">補牌與否完全依照固定矩陣執行，無需判斷。將滑鼠移到表格上可高亮查看。</p>
+
+    <!-- Player Rules -->
+    <div class="card" style="border-top:3px solid #4A90D9;margin-bottom:16px">
+      <div class="card-title" style="color:#7BC8FF">閒家（Player）補牌規則</div>
+      <div class="grid-2">
+        <div style="padding:14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#6EE7B7">0 ~ 5 點</div>
+          <div style="color:#A7F3D0;font-weight:700;margin-top:6px">▶ 必須補牌</div>
+        </div>
+        <div style="padding:14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#FCA5A5">6 ~ 7 點</div>
+          <div style="color:#FCA5A5;font-weight:700;margin-top:6px">■ 停牌（Stand）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banker Matrix -->
+    <div class="card" style="border-top:3px solid #E07070">
+      <div class="card-title" style="color:#FFA0A0">莊家（Banker）補牌矩陣</div>
+      <div style="font-size:11.5px;color:#888;margin-bottom:12px">
+        <span class="pill pill-green">補牌</span> = 補第三張　<span class="pill pill-red">停牌</span> = 不補
+        &nbsp;｜&nbsp; 若閒家站牌（6~7點），莊家 0~5補、6~7停
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:500px">
+          <thead>
+            <tr>
+              <th style="padding:10px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);font-size:12px;color:var(--gold)">莊家點數</th>
+              <th colspan="10" style="padding:10px 8px;background:rgba(26,58,92,0.4);border:1px solid rgba(255,255,255,0.08);font-size:12px;color:#7BC8FF">閒家第三張牌點數</th>
+            </tr>
+            <tr id="matrix-header">
+              <th style="padding:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:11px;color:#888">↓ 莊 ╲ 閒 →</th>
+            </tr>
+          </thead>
+          <tbody id="banker-matrix"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S3: SOP ── -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2 class="section-title">發牌流程標準 SOP</h2>
+    </div>
+    <p class="section-desc">從上桌到清台的完整操作流程，每一步都需精確執行，確保監控鏡頭能清晰記錄。</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">每局發牌流程</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-title">① 開放下注</div>
+            <div class="tl-desc">宣告「請下注」（Place your bets），確認下注區完成下注，巡視桌面預估籌碼結構。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">② 停止下注</div>
+            <div class="tl-desc">宣告「停止下注」，手掌向下由內向外水平揮動，同時巡視確認無人再動籌碼。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">③ 初始發牌</div>
+            <div class="tl-desc">依序：<strong style="color:var(--gold)">閒1 → 莊1 → 閒2 → 莊2</strong>，每張牌面朝下推出。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">④ 翻牌報點</div>
+            <div class="tl-desc">先翻閒家兩張並報點數，再翻莊家兩張並報點數。確認是否天牌。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">⑤ 執行補牌</div>
+            <div class="tl-desc">依矩陣規則判斷閒/莊是否補第三張牌。報出最終點數。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">⑥ 宣告結果</div>
+            <div class="tl-desc">清晰宣告「莊贏」/「閒贏」/「和局」，標記路單，禁用「贏/輸」情緒性詞彙。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">⑦ 收付結算</div>
+            <div class="tl-desc"><strong style="color:var(--gold)">由右至左</strong>：先收輸家籌碼 → 再賠付贏家 → 結算和局 → 結算邊注。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title">⑧ 清台準備</div>
+            <div class="tl-desc">雙手清手示意，確認桌面整潔，準備下一局。</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">洗牌流程</div>
+          <div class="timeline" style="padding-left:28px">
+            <div class="tl-item"><div class="tl-title">① 展示牌組</div><div class="tl-desc">8副牌面朝上展示給玩家確認。</div></div>
+            <div class="tl-item"><div class="tl-title">② 混洗牌組</div><div class="tl-desc">執行Wash洗牌，不少於60秒。</div></div>
+            <div class="tl-item"><div class="tl-title">③ 切牌</div><div class="tl-desc">請玩家使用切牌板切牌。</div></div>
+            <div class="tl-item"><div class="tl-title">④ 燃牌</div><div class="tl-desc">翻第一張，依點數燃入對應張數（A=1張，2-9=面值，10/JQK=10張）。</div></div>
+            <div class="tl-item"><div class="tl-title">⑤ 插Cut Card</div><div class="tl-desc">在距底部14~16張處插入黃色隔牌。</div></div>
+            <div class="tl-item"><div class="tl-title">⑥ 裝入牌靴</div><div class="tl-desc">牌面朝下裝入，開始遊戲。</div></div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color:rgba(239,68,68,0.3)">
+          <div class="card-title" style="color:#FCA5A5">結算禁止事項</div>
+          <div class="tag-warn">✗ 先賠贏家、後收輸家（必須先收後賠）</div>
+          <div class="tag-warn">✗ 跳過座位不按右至左順序</div>
+          <div class="tag-warn">✗ 先結算邊注再結算主注</div>
+          <div class="tag-warn">✗ 使用「贏」「輸」等情感詞彙宣告結果</div>
+          <div class="tag-warn">✗ 標記佣金前移動到下一個座位</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S4: 手勢與下注 ── -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2 class="section-title">手勢規範與下注區配置</h2>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px">
+      <!-- Gestures -->
+      <div class="card">
+        <div class="card-title">標準操作手勢</div>
+        <table class="styled-table">
+          <tr><th>動作</th><th>手勢說明</th></tr>
+          <tr><td style="color:var(--gold)">開放下注</td><td>掌心向上，手臂微展</td></tr>
+          <tr><td style="color:var(--gold)">停止下注</td><td>手掌朝下，由內向外水平揮動</td></tr>
+          <tr><td style="color:var(--gold)">發牌</td><td>拇指+食指夾牌，流暢推出（面朝下）</td></tr>
+          <tr><td style="color:var(--gold)">翻牌</td><td>食指押牌角，拇指翻起，動作清晰</td></tr>
+          <tr><td style="color:var(--gold)">清手示意</td><td>雙手翻轉正反面展示給鏡頭</td></tr>
+          <tr><td style="color:var(--gold)">呼叫主管</td><td>單手高舉，五指張開</td></tr>
+        </table>
+      </div>
+
+      <!-- Bet Zone Diagram -->
+      <div class="card">
+        <div class="card-title">下注區域配置圖</div>
+        <div class="bacc-table">
+          <div class="dealer-side">▲ 荷 官 側</div>
+
+          <div class="bet-zone zone-banker">
+            BANKER　莊
+            <div class="zone-label">最靠荷官，玩家需稍微往前放</div>
+          </div>
+
+          <div class="zone-pair-row">
+            <div class="bet-zone zone-pair">
+              PLAYER PAIR<br>閒 對
+              <div class="zone-label">閒區左角落</div>
+            </div>
+            <div class="bet-zone zone-pair">
+              BANKER PAIR<br>莊 對
+              <div class="zone-label">閒區右角落</div>
+            </div>
+          </div>
+
+          <div class="bet-zone zone-tie">
+            TIE　和　（細長條形區域）
+            <div class="zone-label">橫跨中間，格子小需仔細確認</div>
+          </div>
+
+          <div class="bet-zone zone-player">
+            PLAYER　閒
+            <div class="zone-label">最靠近玩家，最容易放到的位置</div>
+          </div>
+
+          <div class="player-side">▼ 玩 家 側</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stack Rules -->
+    <div class="card">
+      <div class="card-title">籌碼堆疊規則</div>
+      <div class="grid-2">
+        <div>
+          <div class="tag-ok">✓ 大面額放底部，小面額放頂部</div>
+          <div class="tag-ok">✓ 籌碼整齊疊成直柱，清晰可見</div>
+          <div class="tag-ok">✓ 完整放在自己的下注格內</div>
+          <div class="tag-ok">✓ 停止下注宣告後，雙手遠離籌碼</div>
+        </div>
+        <div>
+          <div class="tag-warn">✗ 小面額放底，大面額在上（遮蔽金額）</div>
+          <div class="tag-warn">✗ 散放、歪斜或平鋪於桌面</div>
+          <div class="tag-warn">✗ 壓線、跨區或放入他人格</div>
+          <div class="tag-warn">✗ 截止後繼續觸碰或增加籌碼</div>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="card-title" style="margin-bottom:10px">常見錯誤處理</div>
+      <table class="styled-table">
+        <tr><th>常見錯誤</th><th>荷官處理方式</th></tr>
+        <tr><td>閒注放到莊區</td><td>開牌前輕聲確認：「請問這注押莊嗎？」</td></tr>
+        <tr><td>主注放到對子格</td><td>開牌前告知玩家調整</td></tr>
+        <tr><td>大額放頂小額放底</td><td>禮貌告知：「麻煩大面額放下面，謝謝」</td></tr>
+        <tr><td style="color:#FCA5A5">截止後繼續加注</td><td style="color:#FCA5A5">立即制止，視情況呼叫主管，嚴重時取消該注</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── S5: 賠率結算 ── -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2 class="section-title">賠率與結算</h2>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">標準賠率表</div>
+        <table class="styled-table">
+          <tr><th>下注區</th><th>賠率</th><th>抽水</th><th>下注$100淨贏</th></tr>
+          <tr><td style="color:#FFA0A0;font-weight:700">閒（Player）</td><td>1:1</td><td>無</td><td style="color:#6EE7B7">$100</td></tr>
+          <tr><td style="color:#7BC8FF;font-weight:700">莊（Banker）</td><td>1:1</td><td>5%</td><td style="color:#6EE7B7">$95</td></tr>
+          <tr><td style="color:var(--gold);font-weight:700">和（Tie）</td><td>1:8</td><td>無</td><td style="color:#6EE7B7">$800</td></tr>
+          <tr><td style="color:#C4B5FD;font-weight:700">閒對/莊對</td><td>1:11</td><td>無</td><td style="color:#6EE7B7">$1,100</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">邊注賠率一覽</div>
+        <table class="styled-table">
+          <tr><th>邊注類型</th><th>賠率</th><th>賭場優勢</th></tr>
+          <tr><td>對子（Pair）</td><td>11:1</td><td><span class="pill pill-red">10.36%</span></td></tr>
+          <tr><td>完美對子</td><td>25:1</td><td><span class="pill pill-red">13.03%</span></td></tr>
+          <tr><td>和局（Tie）</td><td>8:1</td><td><span class="pill pill-red">14.36%</span></td></tr>
+          <tr><td>大（Big）5~6張</td><td>0.54:1</td><td><span class="pill pill-gold">4.35%</span></td></tr>
+          <tr><td>小（Small）4張</td><td>1.5:1</td><td><span class="pill pill-gold">5.27%</span></td></tr>
+          <tr><td>龍寶（Dragon Bonus）</td><td>最高30:1</td><td>視地區</td></tr>
+          <tr><td>幸運6（Lucky 6）</td><td>12:1 / 20:1</td><td>極高</td></tr>
+        </table>
+        <div style="margin-top:10px;font-size:11.5px;color:#666">⚠ 結算順序：主注（莊/閒/和）→ 最後才處理邊注</div>
+      </div>
+    </div>
+
+    <!-- Chip Colors -->
+    <div class="card">
+      <div class="card-title">籌碼顏色與對應5%抽水（視覺法）</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:160px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div class="chip chip-red">$5</div>
+          <div><div style="font-size:11px;color:#888">紅色 Red</div><div style="font-weight:700;color:var(--gold)">→ $0.25 抽水</div><div style="font-size:11px;color:#666">一顆紅=一枚25分</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:160px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div class="chip chip-green">$25</div>
+          <div><div style="font-size:11px;color:#888">綠色 Green</div><div style="font-weight:700;color:var(--gold)">→ $1.25 抽水</div><div style="font-size:11px;color:#666">一顆綠=$1加25分</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:160px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div class="chip chip-black">$100</div>
+          <div><div style="font-size:11px;color:#888">黑色 Black</div><div style="font-weight:700;color:var(--gold)">→ $5 抽水</div><div style="font-size:11px;color:#666">一顆黑=一顆紅</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:160px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div class="chip chip-purple">$500</div>
+          <div><div style="font-size:11px;color:#888">紫色 Purple</div><div style="font-weight:700;color:var(--gold)">→ $25 抽水</div><div style="font-size:11px;color:#666">一顆紫=一顆綠</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:160px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+          <div class="chip chip-orange">$1K</div>
+          <div><div style="font-size:11px;color:#888">橘色 Orange</div><div style="font-weight:700;color:var(--gold)">→ $50 抽水</div><div style="font-size:11px;color:#666">一顆橘=兩顆綠</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S6: CALCULATOR ── -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2 class="section-title">互動式抽水計算機</h2>
+    </div>
+    <p class="section-desc">輸入下注金額，即時計算5%抽水與實際付出。練習至能快速心算為止。</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">輸入下注金額</div>
+        <input type="number" id="calc-input" placeholder="0" min="0" oninput="calcCommission()">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
+          <button class="calc-btn" onclick="addAmt(5)">+$5</button>
+          <button class="calc-btn" onclick="addAmt(25)">+$25</button>
+          <button class="calc-btn" onclick="addAmt(100)">+$100</button>
+          <button class="calc-btn" onclick="addAmt(500)">+$500</button>
+          <button class="calc-btn" onclick="addAmt(1000)">+$1K</button>
+          <button class="calc-btn" onclick="addAmt(5000)">+$5K</button>
+          <button class="calc-btn" onclick="addAmt(10000)">+$10K</button>
+          <button class="calc-btn clear" onclick="document.getElementById('calc-input').value='';calcCommission()">清除</button>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="result-box">
+          <div class="result-label">5% 抽水金額</div>
+          <div class="result-value" id="comm-val" style="color:#FCA5A5">—</div>
+        </div>
+        <div class="result-box">
+          <div class="result-label">實際付出（淨贏）</div>
+          <div class="result-value" id="net-val" style="color:#6EE7B7">—</div>
+        </div>
+        <div class="result-box" style="background:rgba(201,168,76,0.05)">
+          <div class="result-label">心算提示</div>
+          <div id="hint-val" style="font-size:13px;color:#9CA3AF;line-height:1.7;text-align:left">輸入金額後顯示計算方法提示…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Reference -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">常用金額快速參考表</div>
+      <div style="overflow-x:auto">
+        <table class="styled-table">
+          <tr>
+            <th>下注</th><th>抽水</th><th>淨贏</th>
+            <th>下注</th><th>抽水</th><th>淨贏</th>
+            <th>下注</th><th>抽水</th><th>淨贏</th>
+          </tr>
+          <tr><td>$20</td><td>$1</td><td style="color:#6EE7B7">$19</td><td>$300</td><td>$15</td><td style="color:#6EE7B7">$285</td><td>$2,000</td><td>$100</td><td style="color:#6EE7B7">$1,900</td></tr>
+          <tr><td>$50</td><td>$2.50</td><td style="color:#6EE7B7">$47.50</td><td>$500</td><td>$25</td><td style="color:#6EE7B7">$475</td><td>$3,000</td><td>$150</td><td style="color:#6EE7B7">$2,850</td></tr>
+          <tr><td style="color:var(--gold);font-weight:700">$100</td><td style="color:var(--gold);font-weight:700">$5</td><td style="color:#6EE7B7;font-weight:700">$95</td><td style="color:var(--gold);font-weight:700">$1,000</td><td style="color:var(--gold);font-weight:700">$50</td><td style="color:#6EE7B7;font-weight:700">$950</td><td>$5,000</td><td>$250</td><td style="color:#6EE7B7">$4,750</td></tr>
+          <tr><td>$200</td><td>$10</td><td style="color:#6EE7B7">$190</td><td>$1,500</td><td>$75</td><td style="color:#6EE7B7">$1,425</td><td>$10,000</td><td>$500</td><td style="color:#6EE7B7">$9,500</td></tr>
+        </table>
+        <div style="font-size:11px;color:#666;margin-top:6px">金色粗體 = 最常用，建議優先熟記</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S7: 四大策略 ── -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2 class="section-title">四大心算計算策略</h2>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="card-title" style="margin:0">策略一：去零折半法</div>
+        <span class="pill pill-green">最推薦新手</span>
+      </div>
+      <div style="font-size:13px;color:#9CA3AF;margin-bottom:12px">適用：尾數為0的整數金額（如$200、$1,500）</div>
+      <div style="padding:14px;background:rgba(16,185,129,0.1);border-radius:8px;font-size:14px;margin-bottom:12px">
+        <span style="color:#6EE7B7;font-weight:700">口訣：金額去掉最後一個零 → 再除以2 = 抽水</span>
+        <div style="color:#888;font-size:12px;margin-top:4px">原理：5% = 10% ÷ 2，人腦最擅長「移位」和「折半」</div>
+      </div>
+      <table class="styled-table">
+        <tr><th>下注金額</th><th>第一步（去零）</th><th>第二步（折半）</th><th>抽水結果</th></tr>
+        <tr><td>$200</td><td>→ $20</td><td>÷ 2</td><td style="color:var(--gold);font-weight:700">$10</td></tr>
+        <tr><td>$450</td><td>→ $45</td><td>÷ 2</td><td style="color:var(--gold);font-weight:700">$22.50</td></tr>
+        <tr><td>$1,000</td><td>→ $100</td><td>÷ 2</td><td style="color:var(--gold);font-weight:700">$50</td></tr>
+        <tr><td>$3,500</td><td>→ $350</td><td>÷ 2</td><td style="color:var(--gold);font-weight:700">$175</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="card-title" style="margin:0">策略二：乘五去尾法</div>
+        <span class="pill pill-blue">通用型</span>
+      </div>
+      <div style="font-size:13px;color:#9CA3AF;margin-bottom:12px">適用：任何金額，尤其奇數（如$78、$525、$4,195）</div>
+      <div style="padding:14px;background:rgba(59,130,246,0.1);border-radius:8px;font-size:14px;margin-bottom:12px">
+        <span style="color:#93C5FD;font-weight:700">口訣：金額 × 5 → 結果移除最後兩位（÷100）= 抽水</span>
+      </div>
+      <table class="styled-table">
+        <tr><th>下注金額</th><th>× 5</th><th>移除末兩位</th><th>抽水結果</th></tr>
+        <tr><td>$78</td><td>390</td><td>→ 3.90</td><td style="color:var(--gold);font-weight:700">$3.90</td></tr>
+        <tr><td>$525</td><td>2,625</td><td>→ 26.25</td><td style="color:var(--gold);font-weight:700">$26.25</td></tr>
+        <tr><td>$4,195</td><td>20,975</td><td>→ 209.75</td><td style="color:var(--gold);font-weight:700">$209.75</td></tr>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">策略三：進位補差法</div>
+        <div style="font-size:12px;color:#9CA3AF;margin-bottom:10px">適用：需直接付淨額的大金額場館</div>
+        <div style="padding:12px;background:rgba(201,168,76,0.08);border-radius:8px;font-size:12.5px;line-height:1.7;color:#B8B0A0">
+          <strong style="color:var(--gold)">以$4,195為例：</strong><br>
+          1. 進位到 $4,200（最近整百）<br>
+          2. $4,200的5% = <strong style="color:var(--gold)">$210</strong><br>
+          3. $4,195 - $210 = $3,985<br>
+          4. 多計了$5的佣金 → $5×5% = $0.25補回<br>
+          5. 最終淨付：<strong style="color:#6EE7B7">$3,985.25</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">策略選擇指南</div>
+        <table class="styled-table">
+          <tr><th>遇到這種金額</th><th>用這個策略</th></tr>
+          <tr><td>尾數為0，如$200、$1,500</td><td style="color:#6EE7B7">策略一</td></tr>
+          <tr><td>奇數，如$78、$525</td><td style="color:#93C5FD">策略二</td></tr>
+          <tr><td>大額且直接付淨額</td><td style="color:var(--gold)">策略三</td></tr>
+          <tr><td>標準面額籌碼</td><td style="color:#C4B5FD">策略四（視覺法）</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S8: BREAKAGE ── -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2 class="section-title">Breakage 零頭進位規則</h2>
+    </div>
+    <p class="section-desc">當計算出的抽水金額無法用最小籌碼（$0.25）精確支付時，賭場一律向上無條件進位。</p>
+
+    <div class="card" style="border-color:rgba(239,68,68,0.3)">
+      <table class="styled-table">
+        <tr><th>下注金額</th><th>理論5%抽水</th><th>實際收取</th><th>實質抽水比例</th></tr>
+        <tr style="background:rgba(239,68,68,0.15)">
+          <td style="color:#FCA5A5;font-weight:700">$1 ~ $4</td><td>$0.05 ~ $0.20</td>
+          <td style="color:#FCA5A5;font-weight:700">$0.25</td>
+          <td><span class="pill pill-red">最高 25%！</span></td>
+        </tr>
+        <tr><td>$5</td><td>$0.25</td><td>$0.25</td><td><span class="pill pill-green">準確 5%</span></td></tr>
+        <tr><td>$6 ~ $10</td><td>$0.30 ~ $0.50</td><td>$0.50</td><td>5% ~ 8.3%</td></tr>
+        <tr><td>$11 ~ $15</td><td>$0.55 ~ $0.75</td><td>$0.75</td><td>5% ~ 6.8%</td></tr>
+        <tr><td>$16 ~ $20</td><td>$0.80 ~ $1.00</td><td>$1.00</td><td>5% ~ 6.3%</td></tr>
+        <tr><td>$25以上</td><td>依計算結果</td><td>進位至$0.25整倍數</td><td>接近 5%</td></tr>
+      </table>
+      <div style="margin-top:14px;padding:12px 16px;background:rgba(239,68,68,0.1);border-left:3px solid #EF4444;border-radius:0 6px 6px 0;font-size:12.5px;color:#FCA5A5">
+        ⚠ <strong>重要：</strong>下注$1~$4的玩家，最多被抽走25%，不是5%！桌面不流通$0.05的零錢，賭場一律向上進位至$0.25。荷官必須嚴格執行，不得自行打折。
+      </div>
+      <div style="margin-top:10px;padding:10px 14px;background:rgba(201,168,76,0.08);border-radius:6px;font-size:12.5px;color:var(--gold)">
+        💡 荷官口訣：「計算結果不管多小，最低收$0.25，並進位至$0.25的整數倍。」
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S9: 免佣百家樂 ── -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2 class="section-title">免佣百家樂（Commission-Free）</h2>
+    </div>
+    <p class="section-desc">目前澳門及亞洲大眾區的主流規則，荷官無需計算5%抽水，遊戲速度更快。</p>
+
+    <div class="card">
+      <table class="styled-table">
+        <tr><th>比較項目</th><th>傳統百家樂（含佣金）</th><th>免佣百家樂</th></tr>
+        <tr><td>莊家贏賠率</td><td>1:1（扣5%，淨0.95:1）</td><td style="color:#6EE7B7">1:1（全額，不抽水）</td></tr>
+        <tr><td style="color:var(--gold)">唯一例外</td><td>無</td><td style="color:#FCA5A5">莊家以「6點」贏 → 賠率變為0.5:1（贏一半）</td></tr>
+        <tr><td>莊家賭場優勢</td><td><span class="pill pill-green">1.06%</span></td><td><span class="pill pill-gold">1.46%（略高）</span></td></tr>
+        <tr><td>閒家賭場優勢</td><td><span class="pill pill-gold">1.24%</span></td><td><span class="pill pill-gold">1.24%（相同）</span></td></tr>
+        <tr><td style="color:var(--gold)">最佳押注策略</td><td>永押莊（優勢最低）</td><td style="color:#FCA5A5">押閒更優！（免佣莊家優勢反而較高）</td></tr>
+        <tr><td>荷官心算</td><td>每局計算5%抽水</td><td style="color:#6EE7B7">只需注意莊家6點的半賠規則</td></tr>
+        <tr><td>適用場合</td><td>VIP貴賓廳、高額區</td><td>大眾區主流、澳門路氹主力</td></tr>
+      </table>
+      <div style="margin-top:14px;padding:12px 16px;background:rgba(201,168,76,0.08);border-radius:6px;font-size:12.5px;color:#B8B0A0">
+        💡 免佣百家樂通常搭配「<strong style="color:var(--gold)">幸運6（Lucky 6）</strong>」邊注：莊家以2張牌6點勝→賠12:1；3張牌6點勝→賠20:1。
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S10: 活碼 ── -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2 class="section-title">活碼制度與洗碼量</h2>
+    </div>
+    <p class="section-desc">VIP廳專用制度。活碼（Rolling Chips）只能用於下注，不可直接兌換現金。</p>
+
+    <!-- Active vs Dead -->
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card" style="border-color:rgba(16,185,129,0.3)">
+        <div class="card-title" style="color:#6EE7B7">活碼（Rolling Chips）</div>
+        <div class="tag-warn" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.07);color:#6EE7B7">✓ 只能用於下注</div>
+        <div class="tag-warn" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.07);color:#6EE7B7">✓ 贏錢後產生「死碼」</div>
+        <div class="tag-warn" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.07);color:#FCA5A5">✗ 本身不可兌現</div>
+        <div class="tag-warn" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.07);color:#FCA5A5">✗ 輸掉後直接消失</div>
+      </div>
+      <div class="card" style="border-color:rgba(201,168,76,0.3)">
+        <div class="card-title" style="color:var(--gold)">死碼（Cash Chips）</div>
+        <div class="tag-ok">✓ 下注或兌換現金皆可</div>
+        <div class="tag-ok">✓ 活碼獲勝後賠付的彩金</div>
+        <div class="tag-ok">✓ 可自由在收銀台兌換</div>
+        <div class="tag-ok">✓ 標準顏色，無特殊標記</div>
+      </div>
+    </div>
+
+    <!-- Flow -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">活碼運作流程</div>
+      <div class="rc-flow" style="gap:4px">
+        <div class="rc-step">
+          <div class="rc-step-num">1</div>
+          <div class="rc-step-title">申請活碼</div>
+          <div class="rc-step-desc">存入現金或動用信用額度，場館核發等值活碼</div>
+        </div>
+        <div class="rc-step">
+          <div class="rc-step-num">2</div>
+          <div class="rc-step-title">活碼下注</div>
+          <div class="rc-step-desc">用活碼在牌桌下注，每下注一次計入洗碼量</div>
+        </div>
+        <div class="rc-step">
+          <div class="rc-step-num">3</div>
+          <div class="rc-step-title">產生死碼</div>
+          <div class="rc-step-desc">贏錢後彩金以死碼賠付，死碼可自由兌現</div>
+        </div>
+        <div class="rc-step">
+          <div class="rc-step-num">4</div>
+          <div class="rc-step-title">洗碼結算</div>
+          <div class="rc-step-desc">離桌時依洗碼量計算返水並退還給玩家</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glossary -->
+    <div class="card">
+      <div class="card-title">活碼術語速查</div>
+      <table class="styled-table">
+        <tr><th>術語</th><th>英文</th><th>說明</th></tr>
+        <tr><td style="color:#6EE7B7;font-weight:700">活碼</td><td>Rolling Chips / RC</td><td>專用下注籌碼，不可兌現</td></tr>
+        <tr><td style="color:var(--gold);font-weight:700">死碼</td><td>Cash Chips</td><td>一般現金籌碼，可兌現</td></tr>
+        <tr><td style="color:#FCA5A5;font-weight:700">洗碼量</td><td>Rolling Turnover</td><td>玩家使用活碼實際下注的累計總金額</td></tr>
+        <tr><td style="color:#C4B5FD">返水</td><td>Rebate</td><td>場館依洗碼量退還給玩家的現金獎勵（通常0.6%~1.2%）</td></tr>
+        <tr><td style="color:#93C5FD">前碼</td><td>Front Money</td><td>玩家事先存入場館的保證金</td></tr>
+        <tr><td style="color:#FCA5A5">對押</td><td>Offsetting / Hedging</td><td>同時押莊和閒以套取返水，通常被禁止</td></tr>
+      </table>
+      <div style="margin-top:12px">
+        <div class="tag-warn">✗ 嚴禁私下告知玩家洗碼量或返水金額</div>
+        <div class="tag-warn">✗ 嚴禁允許玩家以活碼進行「對押」</div>
+        <div class="tag-warn">✗ 嚴禁協助玩家規避洗碼要求</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S11: 異常狀況 ── -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2 class="section-title">異常狀況處理</h2>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#FCA5A5">發牌錯誤處理</div>
+        <table class="styled-table">
+          <tr><th>情境</th><th>正確做法</th></tr>
+          <tr><td>牌發錯位置</td><td>立即停止，呼叫主管，切勿自行移牌</td></tr>
+          <tr><td>多發或少發</td><td>停止發牌，呼叫主管確認補牌或取消</td></tr>
+          <tr><td>牌面意外曝光</td><td>呼叫主管裁決，通常需重新洗牌</td></tr>
+          <tr><td>牌掉落桌外</td><td>停止，呼叫主管，掉落之牌通常不再使用</td></tr>
+          <tr><td>Cut Card提前出現</td><td>本靴牌局終止，執行洗牌程序</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--gold)">玩家爭議處理五步驟</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-title">① 保持冷靜</div><div class="tl-desc">語氣平和，切勿與玩家爭論</div></div>
+          <div class="tl-item"><div class="tl-title">② 立即呼叫主管</div><div class="tl-desc">讓主管介入，荷官不自行裁決</div></div>
+          <div class="tl-item"><div class="tl-title">③ 保持桌面現狀</div><div class="tl-desc">主管到達前，不移動任何籌碼或牌</div></div>
+          <div class="tl-item"><div class="tl-title">④ 客觀陳述</div><div class="tl-desc">說明事件經過，不發表個人意見</div></div>
+          <div class="tl-item"><div class="tl-title">⑤ 依主管裁決執行</div><div class="tl-desc">一切以監控錄影及主管裁決為準</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── S12: QUIZ ── -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2 class="section-title">荷官資格實戰測驗</h2>
+    </div>
+    <p class="section-desc">15題綜合測驗，涵蓋規則、賠率、抽水計算與職業規範。答對12題（80%）以上為通過。</p>
+
+    <div class="card" id="quiz-area">
+      <div class="progress-bar"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <span id="q-counter" style="font-size:12px;color:#888;font-weight:700;letter-spacing:1px">題目 1 / 15</span>
+        <span id="q-score-display" style="font-size:12px;color:var(--gold)">得分：0</span>
+      </div>
+
+      <div id="quiz-q" style="font-size:18px;font-weight:700;color:#F0EAD6;margin-bottom:24px;line-height:1.5;min-height:60px"></div>
+      <div id="quiz-opts"></div>
+      <div id="quiz-feedback" style="display:none;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.7;margin-top:4px"></div>
+      <div style="text-align:right;margin-top:16px">
+        <button id="quiz-next" style="display:none;padding:12px 28px;background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D1117;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer" onclick="nextQuestion()">下一題 ➔</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card" id="quiz-result" style="display:none;text-align:center">
+      <div style="font-size:28px;font-weight:900;font-family:'Noto Serif TC',serif;color:var(--gold);margin-bottom:8px">測驗完成！</div>
+      <div id="result-msg" style="font-size:16px;margin-bottom:24px"></div>
+      <div style="max-width:300px;margin:0 auto 24px">
+        <canvas id="quiz-chart" height="300"></canvas>
+      </div>
+      <button onclick="restartQuiz()" style="padding:12px 32px;background:linear-gradient(135deg,var(--gold),#8B6914);color:#0D1117;border:none;border-radius:8px;font-weight:900;font-size:14px;cursor:pointer">重新測驗</button>
+    </div>
+  </section>
+
+</div><!-- end #main -->
+
+<script>
+// ══════════════════════════════════════
+// SMOOTH SCROLL NAVIGATION
+// ══════════════════════════════════════
+function goTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Update active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`.nav-item[onclick="goTo('${id}')"]`).forEach(n => n.classList.add('active'));
+  // Close mobile sidebar
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+// ══════════════════════════════════════
+// NAV ACTIVE STATE
+// ══════════════════════════════════════
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navItems.forEach(n => n.classList.remove('active'));
+      const match = document.querySelector(`.nav-item[onclick="goTo('${id}')"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-60px 0px -60% 0px' });
+document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+
+// ══════════════════════════════════════
+// BANKER MATRIX
+// ══════════════════════════════════════
+(function() {
+  const hdr = document.getElementById('matrix-header');
+  for (let i = 0; i <= 9; i++) {
+    const th = document.createElement('th');
+    th.style.cssText = 'padding:8px 4px;background:rgba(26,58,92,0.3);border:1px solid rgba(255,255,255,0.08);font-size:12px;color:#7BC8FF;min-width:48px';
+    th.textContent = i;
+    hdr.appendChild(th);
+  }
+
+  const rules = [
+    { pts: '0, 1, 2', draws: 'ALL' },
+    { pts: '3',       draws: [0,1,2,3,4,5,6,7,9] },
+    { pts: '4',       draws: [2,3,4,5,6,7] },
+    { pts: '5',       draws: [4,5,6,7] },
+    { pts: '6',       draws: [6,7] },
+    { pts: '7',       draws: [] },
+  ];
+
+  const tbody = document.getElementById('banker-matrix');
+  rules.forEach(rule => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.style.cssText = 'padding:10px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);font-size:13px;color:#F0EAD6;min-width:70px';
+    th.textContent = rule.pts + ' 點';
+    tr.appendChild(th);
+
+    for (let i = 0; i <= 9; i++) {
+      const td = document.createElement('td');
+      const draw = rule.draws === 'ALL' || (Array.isArray(rule.draws) && rule.draws.includes(i));
+      td.className = 'matrix-cell ' + (draw ? 'draw' : 'stand');
+      td.textContent = draw ? '補' : '停';
+      td.title = draw ? '補牌' : '停牌';
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  });
+})();
+
+// ══════════════════════════════════════
+// COMMISSION CALCULATOR
+// ══════════════════════════════════════
+function calcCommission() {
+  const raw = parseFloat(document.getElementById('calc-input').value) || 0;
+  const comm = Math.ceil(raw * 0.05 * 4) / 4; // Breakage rounding to $0.25
+  const net = raw - comm;
+  const commEl = document.getElementById('comm-val');
+  const netEl  = document.getElementById('net-val');
+  const hintEl = document.getElementById('hint-val');
+
+  if (raw <= 0) {
+    commEl.textContent = '—'; netEl.textContent = '—';
+    hintEl.textContent = '輸入金額後顯示計算方法提示…';
+    return;
+  }
+
+  commEl.textContent = '$' + comm.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+  netEl.textContent  = '$' + net.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+
+  // Hint
+  let hint = '';
+  if (raw % 10 === 0) {
+    hint = `💡 <strong>去零折半法：</strong>$${raw} → 去零得 $${raw/10} → ÷2 = $${raw/20}`;
+  } else {
+    hint = `💡 <strong>乘五去尾法：</strong>$${raw} × 5 = ${raw*5} → 移除末兩位 = $${(raw*5/100).toFixed(2)}`;
+  }
+  if (raw <= 4 && raw > 0) hint += '<br>⚠ Breakage規則：最低收$0.25';
+  hintEl.innerHTML = hint;
+}
+
+function addAmt(n) {
+  const inp = document.getElementById('calc-input');
+  inp.value = (parseFloat(inp.value) || 0) + n;
+  calcCommission();
+}
+
+// ══════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════
+const questions = [
+  { q: '閒家首兩張牌合計 5 點，應如何處理？', opts: ['停牌（Stand）', '必須補第三張牌', '視莊家點數決定', '直接天牌結算'], a: 1, exp: '閒家合計 0~5 點，必須補第三張牌。6~7點才停牌。' },
+  { q: '莊家首兩張牌合計 7 點，應如何處理？', opts: ['必須補牌', '視閒家第三張決定', '停牌（Stand）', '宣告天牌'], a: 2, exp: '莊家 7 點無條件停牌，不論閒家任何情況。' },
+  { q: '玩家押莊$1,000，莊家獲勝。扣除5%抽水後，玩家淨贏多少？', opts: ['$1,000', '$900', '$950', '$975'], a: 2, exp: '$1,000 × 95% = $950。莊家贏扣5%佣金，淨贏$950。' },
+  { q: '閒家首兩張牌合計 9 點，這稱為什麼？', opts: ['補牌局', 'Natural 9 天牌', '對子局', '平局'], a: 1, exp: '8或9點稱為天牌（Natural）。天牌出現時雙方停止發牌，直接結算。' },
+  { q: '標準百家樂和局（Tie）的賠率是多少？', opts: ['1:5', '1:6', '1:8', '1:10'], a: 2, exp: '標準和局賠率為 1:8。和局時莊閒下注退還。' },
+  { q: '莊家 4 點，閒家補的第三張牌是 8，莊家應該？', opts: ['補牌', '停牌', '宣告和局', '重新發牌'], a: 1, exp: '莊家4點時，閒家第三張是2~7才補。第三張是8→停牌。' },
+  { q: '「停止下注」的標準手勢是？', opts: ['雙手高舉', '掌心向下在籌碼區水平揮動', '點頭示意', '指向下注區'], a: 1, exp: '掌心向下，在下注區上方由內向外水平揮動，同時口頭宣佈「No more bets」。' },
+  { q: '籌碼堆疊的正確方式是？', opts: ['大面額放上、小面額放下', '小面額放上、大面額放下', '隨意堆疊即可', '平鋪在桌面'], a: 1, exp: '大面額籌碼必須放底部，小面額放頂部，確保監控鏡頭能清楚辨識金額。' },
+  { q: '計算5%抽水最推薦新手使用的方法是？', opts: ['金額×0.05', '金額÷20', '金額÷5再÷10', '背記固定答案'], a: 1, exp: '金額÷20是最直覺的方法。5% = 10%的一半，去掉一個零再折半。' },
+  { q: '結算的標準順序是？', opts: ['先賠贏家、再收輸家', '先收輸家、再賠贏家', '同時進行', '先結算邊注'], a: 1, exp: '標準流程：先收輸家籌碼（由右至左），再賠付贏家，最後處理邊注。' },
+  { q: '「活碼」（Rolling Chips）的主要特性是？', opts: ['可直接兌換現金', '只能用於下注，不能直接兌現', '比死碼價值更高', '只限莊家區使用'], a: 1, exp: '活碼只能用於下注（滾碼），贏得的彩金以死碼賠付。活碼本身輸掉即消失，不可直接兌現。' },
+  { q: '免佣百家樂（Commission-Free）的唯一特殊規則是？', opts: ['所有注區都抽5%', '莊家以6點勝出時，莊家賠率變為0.5:1', '和局賠率提高到1:9', '閒家也需抽水'], a: 1, exp: '免佣百家樂全程不抽水，唯一例外是莊家以6點勝出，玩家只能獲得下注金額的一半。' },
+  { q: '玩家下注$525押莊，莊家勝，5%抽水應收多少？（乘五去尾法）', opts: ['$26.00', '$26.25', '$27.00', '$25.50'], a: 1, exp: '$525 × 5 = $2,625 → 移除末兩位 = $26.25。' },
+  { q: '下注$3的玩家，莊家勝，實際應收取的抽水是多少？（Breakage規則）', opts: ['$0.15（精確5%）', '$0.10', '$0.25（最低收費）', '$0.20'], a: 2, exp: 'Breakage規則：桌面最小籌碼$0.25，$3的5%=$0.15無法精確支付，一律向上進位至$0.25。' },
+  { q: '荷官發現玩家下注區的籌碼堆疊順序錯誤，應該怎麼做？', opts: ['自行調整籌碼位置', '告知玩家自行調整，若拒絕則呼叫主管', '忽略繼續發牌', '立即取消該注'], a: 1, exp: '荷官不可自行移動玩家籌碼，應告知玩家調整。若玩家拒絕，呼叫主管處理。' },
+];
+
+let qIdx = 0, score = 0, chartInst = null;
+
+function loadQuestion() {
+  const q = questions[qIdx];
+  document.getElementById('q-counter').textContent = `題目 ${qIdx+1} / ${questions.length}`;
+  document.getElementById('q-score-display').textContent = `得分：${score}`;
+  document.getElementById('quiz-progress').style.width = `${(qIdx/questions.length)*100}%`;
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-feedback').style.display = 'none';
+  document.getElementById('quiz-next').style.display = 'none';
+
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = `${['Ａ','Ｂ','Ｃ','Ｄ'][i]}　${opt}`;
+    btn.onclick = () => selectAns(i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function selectAns(idx, btn) {
+  const q = questions[qIdx];
+  document.querySelectorAll('.quiz-opt').forEach(b => { b.onclick = null; });
+  const fb = document.getElementById('quiz-feedback');
+
+  if (idx === q.a) {
+    score++;
+    btn.classList.add('correct');
+    fb.style.cssText = 'display:block;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.7;margin-top:4px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#6EE7B7';
+    fb.innerHTML = `✅ 正確！<br><span style="font-weight:400;color:#A7F3D0">${q.exp}</span>`;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-opt')[q.a].classList.add('reveal');
+    fb.style.cssText = 'display:block;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.7;margin-top:4px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#FCA5A5';
+    fb.innerHTML = `❌ 錯誤。<br><span style="font-weight:400;color:#FCA5A5">${q.exp}</span>`;
+  }
+  document.getElementById('quiz-next').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx < questions.length) { loadQuestion(); }
+  else { showResult(); }
+}
+
+function showResult() {
+  document.getElementById('quiz-progress').style.width = '100%';
+  document.getElementById('quiz-area').style.display = 'none';
+  const rd = document.getElementById('quiz-result');
+  rd.style.display = 'block';
+
+  const pct = Math.round(score / questions.length * 100);
+  const msg = document.getElementById('result-msg');
+  if (pct === 100)     msg.innerHTML = `<span style="color:var(--gold);font-weight:700">完美滿分！</span> 理論知識紮實，可以正式上桌。`;
+  else if (pct >= 80)  msg.innerHTML = `<span style="color:#6EE7B7;font-weight:700">通過！${score}/${questions.length}（${pct}%）</span> 小部分需複習。`;
+  else                 msg.innerHTML = `<span style="color:#FCA5A5;font-weight:700">未達標。${score}/${questions.length}（${pct}%）</span> 請重新研讀教材再測驗。`;
+
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(document.getElementById('quiz-chart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['答對', '答錯'],
+      datasets: [{ data: [score, questions.length - score], backgroundColor: ['#10B981','#EF4444'], borderWidth: 3, borderColor: '#0D1117' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { color: '#9CA3AF', font: { size: 13 } } } }
+    }
+  });
+}
+
+function restartQuiz() {
+  qIdx = 0; score = 0;
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  loadQuestion();
+  document.getElementById('s12').scrollIntoView({ behavior: 'smooth' });
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
