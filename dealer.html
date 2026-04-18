@@ -959,7 +959,14 @@
       padding: 16px 20px !important;
     }
 
-    /* 只對真正小型、不該被切的元素套 avoid,大容器讓它自然流動 */
+    /* 整張牌桌圖(下注配置 / 仿真牌桌)不可切開 */
+    .bacc-table,
+    .real-table-wrap {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+
+    /* 只對小型、不該被切的元素套 avoid,大容器讓它自然流動 */
     .playing-card,
     .matrix-cell,
     .chip,
