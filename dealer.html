@@ -918,7 +918,7 @@
   /* ── PRINT STYLES ── */
   @page {
     size: A4 landscape;
-    margin: 12mm;
+    margin: 8mm 4mm; /* 上下留空間給瀏覽器頁首/頁尾（頁碼），左右最小化 */
   }
 
   @media print {
@@ -949,14 +949,20 @@
 
     /* HERO 不要吃到整頁,印完後允許換頁 */
     #hero {
-      padding: 16px 20px !important;
+      padding: 10px 6px !important;
       break-after: auto;
       page-break-after: auto;
     }
 
     /* 章節讓瀏覽器自然流動,不強制換頁(避免大量空白) */
     .section {
-      padding: 16px 20px !important;
+      padding: 10px 6px !important;
+    }
+
+    /* body 本身不要再多加左右留白 */
+    body, #main {
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     /* 整張牌桌圖(下注配置 / 仿真牌桌)不可切開 */
