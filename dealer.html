@@ -914,6 +914,136 @@
     .mc-question { font-size: 2.4rem; }
     .mc-stats { gap: 8px; }
   }
+
+  /* ── PRINT STYLES ── */
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  @media print {
+    /* 強制保留背景色 / 漸層 / 圖片 */
+    html, body, *, *::before, *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    /* 隱藏導覽相關元素:側邊欄、漢堡鈕 */
+    #sidebar,
+    .menu-toggle {
+      display: none !important;
+    }
+
+    /* 主內容移除左邊 220px 留白 */
+    #main {
+      margin-left: 0 !important;
+    }
+
+    /* 基礎文字顏色與背景 */
+    html, body {
+      background: var(--dark) !important;
+      color: #E8E0D0 !important;
+      font-size: 12pt;
+    }
+
+    /* HERO 不要吃到整頁,印完後允許換頁 */
+    #hero {
+      padding: 16px 20px !important;
+      break-after: auto;
+      page-break-after: auto;
+    }
+
+    /* 章節之間允許換頁,章節內部避免斷 */
+    .section {
+      break-before: page;
+      page-break-before: always;
+      padding: 16px 20px !important;
+    }
+    .section:first-of-type {
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    /* 大區塊避免被中間切開 */
+    .card,
+    .styled-table,
+    .bacc-table,
+    .real-table-wrap,
+    .bet-zone,
+    .playing-card,
+    .matrix-cell,
+    .chip,
+    .result-box,
+    .tl-item,
+    .rc-step,
+    .rc-flow,
+    .tag-warn,
+    .tag-ok,
+    .quiz-opt,
+    .mc-chalkboard,
+    .mc-chalkboard-frame,
+    .mc-example,
+    .mc-chalk-grid,
+    .mc-panel,
+    .mc-tip-box,
+    .mc-question,
+    .grid-2,
+    .grid-3 {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+
+    /* 表格列與標題避免切斷 */
+    table, thead, tbody, tr, td, th {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+
+    /* 標題留在區塊開頭 */
+    h1, h2, h3, h4,
+    .section-title,
+    .section-header,
+    .card-title,
+    .mc-board-header {
+      break-after: avoid;
+      page-break-after: avoid;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* 粉筆板確保底色印出 */
+    .mc-chalkboard {
+      background: #0F4A35 !important;
+    }
+    .mc-chalkboard-frame {
+      background: #3E2817 !important;
+    }
+
+    /* 去掉 hover 放大 / 陰影效果帶來的版面干擾 */
+    .bet-zone:hover,
+    .matrix-cell:hover,
+    .playing-card:hover,
+    .styled-table tr:hover td {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* 隱藏練習題用的互動分頁按鈕(列印時僅保留內容) */
+    .mc-tabs {
+      display: none !important;
+    }
+    .mc-panel {
+      display: block !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* 連結不要加底線 URL 預覽(維持簡潔) */
+    a[href]::after { content: none !important; }
+  }
 </style>
 </head>
 <body>
