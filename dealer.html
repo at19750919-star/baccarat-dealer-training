@@ -954,42 +954,23 @@
       page-break-after: auto;
     }
 
-    /* 章節之間允許換頁,章節內部避免斷 */
+    /* 章節讓瀏覽器自然流動,不強制換頁(避免大量空白) */
     .section {
-      break-before: page;
-      page-break-before: always;
       padding: 16px 20px !important;
     }
-    .section:first-of-type {
-      break-before: auto;
-      page-break-before: auto;
-    }
 
-    /* 大區塊避免被中間切開 */
-    .card,
-    .styled-table,
-    .bacc-table,
-    .real-table-wrap,
-    .bet-zone,
+    /* 只對真正小型、不該被切的元素套 avoid,大容器讓它自然流動 */
     .playing-card,
     .matrix-cell,
     .chip,
-    .result-box,
-    .tl-item,
-    .rc-step,
-    .rc-flow,
+    .bet-zone,
     .tag-warn,
     .tag-ok,
-    .quiz-opt,
-    .mc-chalkboard,
-    .mc-chalkboard-frame,
+    .tl-item,
+    .rc-step,
     .mc-example,
-    .mc-chalk-grid,
-    .mc-panel,
-    .mc-tip-box,
     .mc-question,
-    .grid-2,
-    .grid-3 {
+    .quiz-opt {
       break-inside: avoid !important;
       page-break-inside: avoid !important;
     }
