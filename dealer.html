@@ -1064,9 +1064,6 @@
   <button class="nav-item" onclick="goTo('s9')"><span class="icon">🛡</span>異常狀況處理</button>
   <button class="nav-item" onclick="goTo('s14')"><span class="icon">✂️</span>切牌與削牌</button>
   <button class="nav-item" onclick="goTo('s15')"><span class="icon">🧾</span>結算實戰範例</button>
-  <button class="nav-item" onclick="goTo('s10')"><span class="icon">👔</span>儀容服裝</button>
-  <button class="nav-item" onclick="goTo('s11')"><span class="icon">🔄</span>換班交接</button>
-  <button class="nav-item" onclick="goTo('s12')"><span class="icon">📹</span>監控合規</button>
   <button class="nav-item" onclick="goTo('s16')"><span class="icon">📝</span>實戰測驗</button>
 </nav>
 
@@ -1424,18 +1421,6 @@
             </div>
             <div style="font-size:10px;color:rgba(255,255,255,0.35);text-align:center">籌碼盤</div>
             <div style="padding:6px 12px;background:rgba(180,0,0,0.4);border-radius:4px;border:1px solid rgba(255,255,255,0.15);font-size:11px;color:rgba(255,255,255,0.5)">牌靴</div>
-          </div>
-
-          <!-- 抽水記錄圈 -->
-          <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px">
-            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-right:4px;align-self:center">抽水記錄</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">1</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">2</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">3</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">5</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">6</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">7</div>
-            <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.5)">8</div>
           </div>
 
           <!-- 發牌區（黃紅標記） -->
@@ -2415,132 +2400,10 @@
     </div>
   </section>
 
-  <!-- ── S10: 儀容服裝 ── -->
-  <section class="section" id="s10">
-    <div class="section-header">
-      <div class="section-num">13</div>
-      <h2 class="section-title">儀容服裝與職業形象</h2>
-    </div>
-    <p class="section-desc">荷官代表賭場的專業形象，儀容不合格可能被拒絕上桌。以下為基本標準。</p>
-
-    <div class="grid-2" style="margin-bottom:16px">
-      <div class="card">
-        <div class="card-title" style="color:#6EE7B7">✓ 合格標準</div>
-        <div class="tag-ok">✓ 制服整潔燙平，無破損或污漬</div>
-        <div class="tag-ok">✓ 名牌佩戴在左胸正確位置</div>
-        <div class="tag-ok">✓ 黑色皮鞋乾淨、無磨損</div>
-        <div class="tag-ok">✓ 頭髮整齊束好，不遮眼不碰肩</div>
-        <div class="tag-ok">✓ 指甲修短、乾淨，不塗指甲油</div>
-        <div class="tag-ok">✓ 淡妝自然（女性），鬍鬚清理乾淨（男性）</div>
-        <div class="tag-ok">✓ 口氣清新，不得有菸酒味</div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="color:#FCA5A5">✗ 禁止事項</div>
-        <div class="tag-warn">✗ 佩戴戒指、手鍊、手錶（防藏籌碼嫌疑）</div>
-        <div class="tag-warn">✗ 口袋中放入任何物品</div>
-        <div class="tag-warn">✗ 長指甲或彩繪指甲</div>
-        <div class="tag-warn">✗ 濃烈香水或體味</div>
-        <div class="tag-warn">✗ 穿戴非規定的配件或飾品</div>
-        <div class="tag-warn">✗ 嚼口香糖、吃東西上桌</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">上桌前自我檢查清單</div>
-      <table class="styled-table">
-        <tr><th>檢查項目</th><th>標準</th><th>不合格處理</th></tr>
-        <tr><td>雙手</td><td>指甲短、乾淨、無飾品</td><td>立即修剪 / 取下飾品</td></tr>
-        <tr><td>制服</td><td>整潔、扣好、名牌正位</td><td>更換備用制服</td></tr>
-        <tr><td>鞋子</td><td>黑色皮鞋、乾淨</td><td>清潔或更換</td></tr>
-        <tr><td>儀態</td><td>站姿端正、精神飽滿</td><td>調整狀態後上桌</td></tr>
-        <tr><td>口袋</td><td>完全清空</td><td>清空後由主管確認</td></tr>
-      </table>
-      <div style="margin-top:12px;padding:12px 16px;background:rgba(201,168,76,0.08);border-radius:6px;font-size:16px;color:#B8B0A0">
-        💡 <strong style="color:var(--gold)">核心原則：</strong>荷官身上不得有任何能藏匿籌碼的空間或物品。雙手隨時保持在監控鏡頭的可見範圍內。
-      </div>
-    </div>
-  </section>
-
-  <!-- ── S11: 換班交接 ── -->
-  <section class="section" id="s11">
-    <div class="section-header">
-      <div class="section-num">14</div>
-      <h2 class="section-title">換班交接流程</h2>
-    </div>
-    <p class="section-desc">換班是風控重點環節。交接不清可導致金額短差，嚴重時需賠償或接受紀律處分。</p>
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">標準換班 SOP</div>
-      <div class="tl-container">
-        <div class="tl-item"><div class="tl-title">① 等待當局結束</div><div class="tl-desc">新荷官到達桌邊等候，當前這局完整結算後才進行交接。</div></div>
-        <div class="tl-item"><div class="tl-title">② 清手示意</div><div class="tl-desc">交班荷官面對鏡頭翻轉雙手正反面，表示手上無任何籌碼。</div></div>
-        <div class="tl-item"><div class="tl-title">③ 籌碼點算</div><div class="tl-desc">主管在場監督，與接班荷官共同清點牌桌上所有籌碼堆，逐色逐柱點算。</div></div>
-        <div class="tl-item"><div class="tl-title">④ 填寫交接表</div><div class="tl-desc">將籌碼總額記錄在交接表上，雙方簽名確認。金額須與系統紀錄一致。</div></div>
-        <div class="tl-item"><div class="tl-title">⑤ 確認牌靴狀態</div><div class="tl-desc">確認牌靴剩餘牌數、切牌位置，告知是否即將洗牌。</div></div>
-        <div class="tl-item"><div class="tl-title">⑥ 正式交接</div><div class="tl-desc">接班荷官站定位置，向鏡頭清手，宣佈「新班開始」後開放下注。</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="color:#FCA5A5">交接常見錯誤</div>
-      <table class="styled-table">
-        <tr><th>錯誤行為</th><th>可能後果</th></tr>
-        <tr><td>未等結算完畢就交接</td><td>造成賠付爭議，責任不清</td></tr>
-        <tr><td>未清手就離桌</td><td>被懷疑挾帶籌碼，需調閱錄影</td></tr>
-        <tr><td>籌碼點算有差異但強行簽字</td><td>短差金額由交班荷官承擔</td></tr>
-        <tr><td>忘記告知牌靴狀態</td><td>新荷官誤判，影響遊戲流程</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- ── S12: 監控合規 ── -->
-  <section class="section" id="s12">
-    <div class="section-header">
-      <div class="section-num">15</div>
-      <h2 class="section-title">監控合規與防弊意識</h2>
-    </div>
-    <p class="section-desc">賭場全程受24小時監控錄影覆蓋。荷官的每一個動作都被記錄，需嚴格遵守合規要求。</p>
-
-    <div class="grid-2" style="margin-bottom:16px">
-      <div class="card">
-        <div class="card-title">鏡頭意識基本守則</div>
-        <div class="tag-ok">✓ 動作放大、放慢，確保鏡頭看得清楚</div>
-        <div class="tag-ok">✓ 籌碼操作一律在桌面上進行，不靠近身體</div>
-        <div class="tag-ok">✓ 雙手隨時保持在桌面可見範圍</div>
-        <div class="tag-ok">✓ 拿起籌碼時展開給鏡頭確認面額</div>
-        <div class="tag-ok">✓ 清手動作做到位：翻正翻反各一次</div>
-        <div class="tag-ok">✓ 每次觸碰籌碼池前後都要清手</div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="color:#FCA5A5">高風險行為（零容忍）</div>
-        <div class="tag-warn">✗ 手伸到桌面下方或靠近口袋</div>
-        <div class="tag-warn">✗ 遮擋鏡頭視線操作籌碼</div>
-        <div class="tag-warn">✗ 與客人有私下交流或暗號</div>
-        <div class="tag-warn">✗ 故意多賠或少收籌碼</div>
-        <div class="tag-warn">✗ 私下接受客人小費（依場館規定）</div>
-        <div class="tag-warn">✗ 下班後進入博彩區域賭博</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">常見作弊手法與荷官防範</div>
-      <table class="styled-table">
-        <tr><th>作弊類型</th><th>手法說明</th><th>荷官應對</th></tr>
-        <tr><td style="color:#FCA5A5;font-weight:700">過牌投注</td><td>在看到結果後才偷放籌碼</td><td>停止下注後嚴格巡視，發現立即呼叫主管</td></tr>
-        <tr><td style="color:#FCA5A5;font-weight:700">偷換籌碼</td><td>趁混亂偷換大面額或改變下注區</td><td>記住各位客人下注位置與金額，發現異常立即停局</td></tr>
-        <tr><td style="color:#FCA5A5;font-weight:700">合謀暗號</td><td>客人與荷官配合傳遞牌面信息</td><td>荷官不得與客人有任何非標準互動</td></tr>
-        <tr><td style="color:#FCA5A5;font-weight:700">標記牌張</td><td>用指甲或工具在牌上做記號</td><td>定期檢查牌面，發現刮痕或標記立即換牌</td></tr>
-      </table>
-      <div style="margin-top:12px;padding:12px 16px;background:rgba(239,68,68,0.08);border-left:3px solid #EF4444;border-radius:0 6px 6px 0;font-size:16px;color:#FCA5A5">
-        ⚠ <strong>記住：</strong>荷官不是執法者。發現可疑行為時，不正面指控客人，而是用暗語通知主管（如「麻煩請確認」），由主管和安保處理。
-      </div>
-    </div>
-  </section>
-
   <!-- ── S16: QUIZ ── -->
   <section class="section" id="s16">
     <div class="section-header">
-      <div class="section-num">16</div>
+      <div class="section-num">13</div>
       <h2 class="section-title">荷官資格實戰測驗</h2>
     </div>
 
@@ -2686,20 +2549,20 @@ function addAmt(n) {
 // ══════════════════════════════════════
 const questions = [
   // ── 情境判斷題（7 題）──
-  { q: '第 40 局發牌完畢，閒家 7 點勝。結算時發現座位 3 的客人押閒 $5,000 的籌碼中，混入一枚面額不符的活碼（應為泥碼區）。正確處理？', opts: ['視為有效下注，以泥碼賠付', '視為無效下注，退還全部籌碼', '舉手暫停、呼叫主管到場核對監台後裁定', '要求客人自行指認哪幾枚籌碼有效'], a: 2, exp: '籌碼種類混淆涉及滾碼計算與賠付方式，荷官無權自行判定。標準流程：凍結桌面→主管介入→監台回放確認下注時點與意圖→依廳規裁定。荷官不可自行取捨或與客人協商。' },
+  { q: '結算時發現客人押閒 $5,000 的泥碼籌碼中，不小心混入一枚活碼。正確處理？', opts: ['視為有效下注，直接以活碼賠付', '視為無效下注，退還全部籌碼', '舉手暫停、呼叫主管到場核對監台後裁定', '要求客人自行指認哪幾枚籌碼有效'], a: 2, exp: '泥碼區混入活碼涉及滾碼計算與賠付方式（活碼需計入 Rolling），荷官無權自行判定。標準流程：凍結桌面→呼叫主管→監台回放確認下注時點與意圖→依廳規裁定。荷官不可自行取捨或與客人協商。' },
   { q: '切牌後翻出第一張燒牌為紅心 8，正準備燒牌時，客人 A 堅持「剛才切得不乾淨」要求重切。此時你應？', opts: ['配合客人要求重新切牌', '維持程序、完成燒 8 張、呼叫主管處理客人訴求', '請其他客人投票決定', '停止開靴，整靴作廢'], a: 1, exp: '切牌一旦完成、燒牌動作已啟動，程序不可回頭。荷官必須依標準完成開靴程序，客人異議由主管處理。擅自重切等於讓客人干預牌序，屬嚴重違規。' },
   { q: '貴賓廳客人要求「幫我記一下這局押多少」，希望你口頭協助下注。此時你應？', opts: ['配合記錄在腦中', '拿出筆記本寫下', '禮貌婉拒，說明「所有下注監台已留檔」，並通知主管', '請隔壁荷官幫忙記'], a: 2, exp: '荷官禁止與客人產生任何私下金錢往來、代下注、代理行為——這是「利益迴避」的核心紅線。即使出於善意配合，都可能被認定為與客人串通。標準應對：婉拒並告知監台留檔機制，同時通報主管。' },
   { q: '已唱「停止下注」、手勢完成、第一張牌拉出牌口。座位 7 客人突然大喊「等一下！我還要加押！」並將籌碼推向下注區。正確處理？', opts: ['暫停發牌接受加注', '維持發牌、口頭說明「下注已封」，不接受該筆加注', '與客人溝通後由客人決定', '舉手請主管裁定'], a: 1, exp: '「停止下注」手勢完成後至發牌結束期間，任何籌碼移動皆無效。這是維護牌桌公正性的絕對原則，荷官必須堅守、不可由客人情緒左右。主管也不會推翻此規定（除非監台認定手勢有問題）。' },
-  { q: '同一局同時發生：① 座位 2 客人投訴前局賠錯 ② 監台要求確認桌面籌碼 ③ 主管經過詢問「現在還好嗎？」。處理優先順序？', opts: ['① → ② → ③', '② → ③ → ①（監台最優先，主管次之，客訴由主管接手）', '③ → ① → ②', '同時處理三者'], a: 1, exp: '優先級鐵律：監台 > 主管 > 客人。監台指示是合規最高位階；主管到場後客訴應自然轉交主管處理（荷官只需簡述狀況）。荷官一次只處理一件事，其他請對方稍候或轉介。' },
+  { q: '牌局進行中同時發生：① 座位 2 客人舉手投訴前局賠錯 ② 監控對講機要求確認桌面籌碼 ③ 主管經過輕問「現在還好嗎？」。荷官應優先回應？', opts: ['先處理客人投訴', '先回應監控指示', '先回應主管問候', '三者同時處理'], a: 1, exp: '優先級鐵律：監控 > 主管 > 客人。監控對講機指示屬合規最高位階，必須立即回應；主管到場後客訴自然轉交主管處理（荷官簡述狀況即可）；荷官一次只處理一件事。' },
   { q: '閒家 1 點，莊家為 5+3（8 點）。此時桌面正確動作？', opts: ['閒家補第三張後比大小', '因閒家點數過低，直接判莊勝', '莊家天牌（Natural 8）直接勝，立即結算', '和局'], a: 2, exp: '天牌規則凌駕補牌規則：任何一方首兩張達 8 或 9 點，雙方立即停止補牌、直接比大小。此題莊家 8 點為天牌，閒家即使 1 點也不補牌，直接莊勝結算。' },
   { q: '一位連輸十局的客人情緒激動，突然將手中茶杯摔向桌面，水濺到牌桌一角。正確處理？', opts: ['先安撫客人情緒，繼續發牌', '立即清理後繼續', '立即「停止下注」、舉手示意，雙手離桌、等待主管與保安到場', '自行請客人離席'], a: 2, exp: '公共安全事件（暴力行為、物品損毀）荷官不介入、不對話、不清理。標準 SOP：凍結桌面→雙手離桌→等待處理。介入或言語互動都可能升級衝突並損及個人安全。' },
 
   // ── 計算題（6 題）──
-  { q: '客人押莊 $378,000，莊家勝。以「乘五去尾法」計算抽水，應收多少？淨賠多少？', opts: ['抽水 $18,000，淨賠 $360,000', '抽水 $18,900，淨賠 $359,100', '抽水 $19,000，淨賠 $359,000', '抽水 $18,500，淨賠 $359,500'], a: 1, exp: '$378,000 × 5 = $1,890,000 → 去末兩位 = $18,900。淨賠 $378,000 − $18,900 = $359,100。大額注的抽水心算是貴賓廳基本功，必須穩、快、準。' },
+  { q: '客人押莊 $370,000，莊家勝。以「乘五去尾法」計算抽水，應收多少？淨賠多少？', opts: ['抽水 $18,000，淨賠 $352,000', '抽水 $18,500，淨賠 $351,500', '抽水 $19,000，淨賠 $351,000', '抽水 $17,500，淨賠 $352,500'], a: 1, exp: '$370,000 × 5 = $1,850,000 → 去末兩位 = $18,500。淨賠 $370,000 − $18,500 = $351,500。大額注的抽水心算是貴賓廳基本功，必須穩、快、準。' },
   { q: '同一局下注狀況：座位 2 押莊 $2,000、座位 4 押閒 $5,000、座位 6 押和 $200。莊家勝。桌面總收支為？（荷官視角，正值為收入、負值為賠出）', opts: ['桌面收 +$3,100', '桌面收 +$3,300（收閒 $5,000 + 和 $200 − 賠莊淨 $1,900）', '桌面收 +$5,200', '桌面收 +$2,900'], a: 1, exp: '收：閒家 $5,000 + 和 $200 = $5,200。付：莊家 $2,000 × 0.95（扣抽水）= $1,900。桌面淨收 $5,200 − $1,900 = $3,300。此類多注結算是中階考核重點，需能快速心算桌面總差額。' },
   { q: '貴賓客以泥碼下注押莊 $50,000，莊家勝。以下處理何者正確？', opts: ['以泥碼賠付 $47,500', '留下 $50,000 泥碼（計入 Rolling），以活碼賠付 $47,500', '以泥碼賠付 $50,000，不扣抽水', '收泥碼 $50,000，以泥碼賠付 $50,000'], a: 1, exp: '此廳規採「泥碼下注計入滾碼量」的貴賓制度：下注泥碼視為已滾、計入 Rolling；贏得彩金以活碼賠付以便後續再滾。$50,000 × 95% = $47,500 活碼。抽水仍照收。' },
-  { q: '客人押莊 $1,250，莊家以兩張牌 6 點勝，並押幸運六（通用區）$100。總賠付為？', opts: ['$1,187.50 + $1,200', '莊家賠 $1,187.50（$1,250 − 抽水 $62.50），幸運六賠 $1,200（100 × 12），合計 $2,387.50', '莊家賠 $1,250，幸運六賠 $1,200', '莊家不賠（莊 6 特殊規則），只賠幸運六 $1,200'], a: 1, exp: '莊家 6 點仍算莊勝、正常賠 1:1 扣 5%（抽水 $1,250 ÷ 20 = $62.50，淨賠 $1,187.50）。幸運六兩張牌 6 點通用區 12:1，$100 × 12 = $1,200。另一種賠率結構下莊家 6 點僅賠半（1:2）則為不同廳規，需依實際規定判斷。' },
-  { q: '客人押莊 $8,650，莊家勝。抽水為？', opts: ['$430', '$432.50', '$435', '$433'], a: 1, exp: '$8,650 × 5% = $432.50。可用任意方法驗算：直接乘 $8,650 × 0.05 = $432.50；除 20 得 $432.50；乘五去尾 $8,650 × 5 = $43,250 → 去末兩位 = $432.50。三法結果一致，是速算自我驗算的關鍵。' },
+  { q: '客人押莊 $12,000，莊家以兩張牌 6 點勝，並押幸運六（通用區）$100。總賠付為？', opts: ['莊家賠 $12,000，幸運六賠 $1,200，合計 $13,200', '莊家賠 $11,400（$12,000 − 抽水 $600），幸運六賠 $1,200（100 × 12），合計 $12,600', '莊家賠 $11,400，不另賠幸運六', '莊家不賠（莊 6 特殊規則），只賠幸運六 $1,200'], a: 1, exp: '莊家 6 點仍算莊勝、正常賠 1:1 扣 5%（抽水 $12,000 ÷ 20 = $600，淨賠 $11,400）。幸運六兩張牌 6 點通用區 12:1，$100 × 12 = $1,200。另一種賠率結構下莊家 6 點僅賠半（1:2）則為不同廳規，需依實際規定判斷。' },
+  { q: '客人押莊 $86,000，莊家勝。抽水為？', opts: ['$4,200', '$4,300', '$4,320', '$4,500'], a: 1, exp: '$86,000 × 5% = $4,300。可用任意方法驗算：直接乘 $86,000 × 0.05 = $4,300；除 20 得 $4,300；乘五去尾 $86,000 × 5 = $430,000 → 去末兩位 = $4,300。三法結果一致，是速算自我驗算的關鍵。' },
   { q: '座位 1 押莊 $500、座位 3 押閒 $500、座位 5 押和 $100。閒家 8 點天牌勝。桌面總差額？', opts: ['桌面收 0（押莊押閒相抵）', '桌面收 +$100（和局注收走 $100，莊閒互抵）', '桌面付 $500', '桌面收 +$600'], a: 1, exp: '閒勝：收莊 $500、賠閒 $500（無抽水）→ 淨 0。和局輸：收 $100。桌面淨收 $100。重點在記住「閒家勝不扣抽水」、「和局注在非和結果時全數收走」。' },
 
   // ── 違規辨識題（5 題）──
