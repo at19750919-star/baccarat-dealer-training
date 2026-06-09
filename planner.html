@@ -17,6 +17,21 @@
   #bar .group{display:flex;gap:6px;align-items:center;background:#2f343d;border:1px solid #3b414c;border-radius:10px;padding:5px 8px}
   #bar label{font-size:.72rem;color:#aab2bd}
   #bar input[type=number]{width:52px;background:#1d2026;border:1px solid #444b56;color:#e8eaed;border-radius:6px;padding:4px 6px;font-size:.85rem;text-align:center}
+  .sliders{gap:16px}
+  .sl{display:flex;flex-direction:column;gap:2px;min-width:106px}
+  .sl label{font-size:.72rem;color:#aab2bd}
+  .sl label b{color:#fff;font-size:.8rem}
+  .sl input[type=range]{
+    -webkit-appearance:none;appearance:none;width:118px;height:6px;border-radius:6px;
+    background:#444b56;outline:none;accent-color:#c0392b;cursor:pointer;
+  }
+  .sl input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+    background:#c0392b;border:2px solid #e8eaed;cursor:pointer;
+  }
+  .sl input[type=range]::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:#c0392b;border:2px solid #e8eaed;cursor:pointer;
+  }
   .btn{
     cursor:pointer;border:none;border-radius:8px;padding:7px 11px;font-size:.82rem;font-weight:600;
     background:#3a4150;color:#e8eaed;transition:background .15s,transform .05s;white-space:nowrap;
@@ -85,11 +100,19 @@
 <div id="app">
 
   <div id="bar">
-    <div class="group">
-      <label>房間(公尺) 寬</label><input id="rw" type="number" value="4" min="1" max="20" step="0.5">
-      <label>長</label><input id="rd" type="number" value="3" min="1" max="20" step="0.5">
-      <label>高</label><input id="rh" type="number" value="2.7" min="2" max="5" step="0.1">
-      <button class="btn" id="applyRoom">套用</button>
+    <div class="group sliders">
+      <div class="sl">
+        <label>寬 <b id="rwv">4.0</b> m</label>
+        <input id="rw" type="range" min="1" max="12" step="0.1" value="4">
+      </div>
+      <div class="sl">
+        <label>長 <b id="rdv">3.0</b> m</label>
+        <input id="rd" type="range" min="1" max="12" step="0.1" value="3">
+      </div>
+      <div class="sl">
+        <label>高 <b id="rhv">2.7</b> m</label>
+        <input id="rh" type="range" min="2" max="4" step="0.1" value="2.7">
+      </div>
     </div>
     <div class="sep"></div>
     <button class="btn primary" id="uploadBtn">＋ 上傳照片</button>
@@ -415,15 +438,24 @@ window.addEventListener('keydown',(e)=>{
 
 /* ---------- 工具列 ---------- */
 const $ = id=>document.getElementById(id);
-$('applyRoom').onclick = ()=>{
-  ROOM.w = clampNum($('rw').value,1,20,4);
-  ROOM.d = clampNum($('rd').value,1,20,3);
-  ROOM.h = clampNum($('rh').value,2,5,2.7);
+function applyRoomLive(){
+  ROOM.w = parseFloat($('rw').value);
+  ROOM.d = parseFloat($('rd').value);
+  ROOM.h = parseFloat($('rh').value);
+  $('rwv').textContent = ROOM.w.toFixed(1);
+  $('rdv').textContent = ROOM.d.toFixed(1);
+  $('rhv').textContent = ROOM.h.toFixed(1);
   buildRoom();
   items.forEach(clampInRoom);
   if(selected) select(selected);
-};
-function clampNum(v,min,max,def){ v=parseFloat(v); if(isNaN(v))v=def; return Math.min(max,Math.max(min,v)); }
+}
+['rw','rd','rh'].forEach(id=>$(id).addEventListener('input', applyRoomLive));
+function syncSliders(){
+  $('rw').value=ROOM.w; $('rd').value=ROOM.d; $('rh').value=ROOM.h;
+  $('rwv').textContent=(+ROOM.w).toFixed(1);
+  $('rdv').textContent=(+ROOM.d).toFixed(1);
+  $('rhv').textContent=(+ROOM.h).toFixed(1);
+}
 $('resetView').onclick = frameRoom;
 
 $('uploadBtn').onclick = ()=>$('file').click();
@@ -461,7 +493,7 @@ function loadState(notify){
   if(!raw){ if(notify) toast('沒有已儲存的配置'); return; }
   const data = JSON.parse(raw);
   ROOM = Object.assign({w:4,d:3,h:2.7}, data.room);
-  $('rw').value=ROOM.w; $('rd').value=ROOM.d; $('rh').value=ROOM.h;
+  syncSliders();
   buildRoom();
   items.slice().forEach(g=>scene.remove(g)); items.length=0; clearSelection();
   (data.items||[]).forEach(it=>{
