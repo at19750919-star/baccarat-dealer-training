@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>達摩祖師 — 禪宗東土初祖</title>
+<meta name="description" content="達摩祖師（菩提達摩）生平、傳法、九年面壁、一葦渡江與禪宗思想介紹。">
+<style>
+  :root{
+    --ink:#2b2018;
+    --ink-soft:#5a4a3a;
+    --paper:#f4ece0;
+    --paper-2:#ece0cf;
+    --gold:#b08d57;
+    --gold-deep:#8a6a36;
+    --red:#9c3b2e;
+    --line:rgba(120,90,55,.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Noto Serif TC","Songti TC","STSong",serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block}
+
+  /* ---- Hero ---- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 50% 0%, #2c241c 0%, #15100b 70%, #0c0805 100%);
+    text-align:center;
+    padding:60px 24px;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.015) 0 2px, transparent 2px 6px);
+    pointer-events:none;
+  }
+  .hero-figure{
+    position:relative;
+    z-index:2;
+    width:min(360px,72vw);
+    border-radius:8px;
+    box-shadow:0 30px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(176,141,87,.35);
+    filter:saturate(1.05) contrast(1.03);
+  }
+  .hero-frame{
+    position:relative;
+    z-index:2;
+    padding:18px;
+    border:1px solid rgba(176,141,87,.4);
+    border-radius:14px;
+    background:linear-gradient(160deg, rgba(176,141,87,.08), rgba(0,0,0,.2));
+    backdrop-filter:blur(2px);
+  }
+  .hero-text{
+    position:relative;z-index:2;
+    margin-top:34px;
+    color:var(--paper);
+  }
+  .hero-text .eyebrow{
+    letter-spacing:.7em;
+    font-size:.8rem;
+    color:var(--gold);
+    margin-bottom:14px;
+    padding-left:.7em;
+  }
+  .hero-text h1{
+    font-size:clamp(3rem,12vw,6rem);
+    font-weight:900;
+    letter-spacing:.15em;
+    text-shadow:0 4px 24px rgba(0,0,0,.6);
+    line-height:1.05;
+  }
+  .hero-text .sub{
+    margin-top:16px;
+    font-size:clamp(1rem,3.4vw,1.25rem);
+    color:rgba(244,236,224,.82);
+    letter-spacing:.25em;
+  }
+  .scroll-hint{
+    position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+    z-index:2;color:var(--gold);font-size:.78rem;letter-spacing:.4em;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+  /* ---- Layout ---- */
+  main{max-width:880px;margin:0 auto;padding:0 24px}
+  section{padding:72px 0;border-bottom:1px solid var(--line)}
+  section:last-child{border-bottom:none}
+  .sec-label{
+    color:var(--gold-deep);
+    letter-spacing:.5em;
+    font-size:.8rem;
+    margin-bottom:10px;
+  }
+  h2{
+    font-size:clamp(1.8rem,5.5vw,2.6rem);
+    font-weight:900;
+    letter-spacing:.08em;
+    margin-bottom:24px;
+    position:relative;
+    padding-bottom:14px;
+  }
+  h2::after{
+    content:"";position:absolute;left:0;bottom:0;
+    width:64px;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,var(--red),var(--gold));
+  }
+  p{margin-bottom:20px;color:var(--ink-soft);font-size:1.08rem}
+  p strong{color:var(--ink)}
+
+  .lead{
+    font-size:1.25rem;
+    color:var(--ink);
+    border-left:4px solid var(--gold);
+    padding-left:20px;
+    background:linear-gradient(90deg, rgba(176,141,87,.08), transparent);
+  }
+
+  /* ---- Timeline ---- */
+  .timeline{position:relative;margin-top:20px;padding-left:28px}
+  .timeline::before{
+    content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(var(--gold),transparent);
+  }
+  .tl-item{position:relative;padding:0 0 34px 20px}
+  .tl-item::before{
+    content:"";position:absolute;left:-28px;top:6px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--paper);border:3px solid var(--red);
+  }
+  .tl-item h3{font-size:1.2rem;letter-spacing:.05em;margin-bottom:6px}
+  .tl-item .when{color:var(--gold-deep);font-size:.85rem;letter-spacing:.2em;margin-bottom:4px}
+
+  /* ---- Story cards ---- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:10px}
+  .card{
+    background:linear-gradient(160deg,var(--paper-2),#f7f0e6);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px 24px;
+    box-shadow:0 8px 24px rgba(120,90,55,.08);
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .card:hover{transform:translateY(-5px);box-shadow:0 16px 36px rgba(120,90,55,.18)}
+  .card .ico{font-size:1.8rem;margin-bottom:10px}
+  .card h3{font-size:1.25rem;margin-bottom:10px;letter-spacing:.06em}
+  .card p{font-size:.98rem;margin-bottom:0}
+
+  /* ---- Quote ---- */
+  .quote{
+    text-align:center;
+    background:radial-gradient(120% 120% at 50% 0%, #221a12, #100b07);
+    color:var(--paper);
+    margin:0 -24px;
+    padding:80px 32px;
+  }
+  .quote .q{
+    font-size:clamp(1.6rem,6vw,2.4rem);
+    font-weight:700;
+    letter-spacing:.12em;
+    line-height:1.7;
+    color:#f0e6d6;
+  }
+  .quote .q span{color:var(--gold)}
+  .quote .by{margin-top:22px;color:var(--gold);letter-spacing:.4em;font-size:.85rem}
+
+  footer{
+    text-align:center;padding:46px 24px;
+    color:var(--ink-soft);font-size:.85rem;letter-spacing:.1em;
+    background:var(--paper-2);
+  }
+  footer a{color:var(--gold-deep);text-decoration:none}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.show{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div>
+    <div class="hero-frame">
+      <img class="hero-figure" src="images/damo.jpeg" alt="達摩祖師木雕像">
+    </div>
+    <div class="hero-text">
+      <div class="eyebrow">禪 宗 東 土 初 祖</div>
+      <h1>達摩祖師</h1>
+      <div class="sub">菩 提 達 摩 ・ Bodhidharma</div>
+    </div>
+  </div>
+  <div class="scroll-hint">向 下 探 尋 ▾</div>
+</header>
+
+<main>
+
+  <section class="reveal">
+    <div class="sec-label">緣 起</div>
+    <h2>一葦渡江，東土傳燈</h2>
+    <p class="lead">達摩祖師，又稱菩提達摩，南北朝時期由南印度泛海東來中國，是中國禪宗的開創者，被尊為「東土第一代祖師」。</p>
+    <p>相傳達摩本為南天竺香至國的三王子，自幼穎悟，師承禪宗第二十七祖<strong>般若多羅</strong>，得授衣缽，成為印度禪宗第二十八祖。承師遺命，他渡海來到中土，將「直指人心、見性成佛」的禪法傳入東方，開啟了影響後世千餘年的禪宗法脈。</p>
+    <p>他所傳的不立文字、教外別傳之旨，融會中華文化，孕育出獨樹一格的中國禪，並輾轉東傳至朝鮮、日本，遠播海外。</p>
+  </section>
+
+  <section class="reveal">
+    <div class="sec-label">行 跡</div>
+    <h2>祖師生平足跡</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="when">南印度・香至國</div>
+        <h3>王子出身，承嗣衣缽</h3>
+        <p>身為國王第三子，捨王族尊榮而入佛門，依止般若多羅尊者修行，得承禪宗第二十八祖之位。</p>
+      </div>
+      <div class="tl-item">
+        <div class="when">泛海三載・抵達廣州</div>
+        <h3>遠涉重洋，東來震旦</h3>
+        <p>遵師付囑，乘船歷經三年航程，自海路抵達中國南方，弘法之願由此啟程。</p>
+      </div>
+      <div class="tl-item">
+        <div class="when">金陵・梁武帝</div>
+        <h3>與梁武帝論「功德」</h3>
+        <p>武帝問：「朕造寺寫經度僧，有何功德？」達摩答：「並無功德。」一語道破著相布施之非，因機緣未契而北上。</p>
+      </div>
+      <div class="tl-item">
+        <div class="when">嵩山・少林寺</div>
+        <h3>九年面壁，禪定觀心</h3>
+        <p>渡江北行至嵩山少林寺，於石洞中面壁靜坐九年，世稱「壁觀婆羅門」，留下禪宗最深邃的修行身影。</p>
+      </div>
+      <div class="tl-item">
+        <div class="when">傳法・慧可</div>
+        <h3>立雪斷臂，傳付心印</h3>
+        <p>神光（慧可）立雪求法、斷臂明志，達摩授以衣缽與《楞伽經》，成為禪宗東土第二祖，法脈遂得延續。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="sec-label">傳 說</div>
+    <h2>千古流傳的祖師公案</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="ico">🌾</div>
+        <h3>一葦渡江</h3>
+        <p>離開金陵北上時，達摩折一根蘆葦置於江面，腳踏其上渡過長江，化作禪門最為人傳頌的飄逸身影。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🧱</div>
+        <h3>面壁九年</h3>
+        <p>於少林石洞中靜坐觀心九載，相傳其身影竟映入石壁，留下「面壁石」的傳說。</p>
+      </div>
+      <div class="card">
+        <div class="ico">❄️</div>
+        <h3>立雪斷臂</h3>
+        <p>慧可冒大雪佇立、自斷一臂以表求道之誠，終得達摩印可，傳為禪林千古佳話。</p>
+      </div>
+      <div class="card">
+        <div class="ico">👞</div>
+        <h3>隻履西歸</h3>
+        <p>相傳達摩示寂後，有人於蔥嶺見其手提一隻草鞋西行；開棺視之，棺中果僅餘一履。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote reveal">
+    <div class="q">「外息諸緣，內心無喘，<br><span>心如牆壁</span>，可以入道。」</div>
+    <div class="by">— 達 摩 祖 師</div>
+  </section>
+
+  <section class="reveal">
+    <div class="sec-label">法 義</div>
+    <h2>禪宗思想的核心</h2>
+    <p>達摩所傳之法，被後世概括為<strong>「二入四行」</strong>：以「理入」契悟真性，以「行入」於日常磨練心志。其禪風直截了當，不依文字繁瑣的義理，而重在當下契入本心。</p>
+    <p>禪宗的精神，正可由四句綱領道盡——</p>
+    <div class="cards">
+      <div class="card"><h3>不立文字</h3><p>真理不囿於語言文字，貴在親證體悟。</p></div>
+      <div class="card"><h3>教外別傳</h3><p>於經教之外，以心傳心，師資相承。</p></div>
+      <div class="card"><h3>直指人心</h3><p>直探本心，不假外求枝節。</p></div>
+      <div class="card"><h3>見性成佛</h3><p>徹見自性，當下即是佛。</p></div>
+    </div>
+    <p style="margin-top:28px">這份「以心印心」的傳承，自達摩而下歷經慧可、僧璨、道信、弘忍，至六祖<strong>惠能</strong>而大盛，使禪宗成為中國佛教中最具生命力、影響最深遠的宗派之一。</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>達摩祖師 ・ 禪宗東土初祖　|　一葦渡江　九年面壁　以心傳心</p>
+  <p style="margin-top:8px"><a href="index.html">← 返回首頁</a></p>
+</footer>
+
+<script>
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
