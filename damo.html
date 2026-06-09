@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>達摩 ・ 禪</title>
 <meta name="description" content="達摩祖師（菩提達摩）— 一葦渡江、九年面壁、以心傳心。水墨禪意。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.7.0/style.css" rel="stylesheet">
 <style>
   :root{
     --sumi:#0b0b0d;        /* 墨黑 */
@@ -14,25 +18,34 @@
     --cinnabar:#c0392b;    /* 硃砂 */
     --cinnabar-2:#d65a4a;
     --gold:#c9a86a;
+    --serif:"Noto Serif TC","LXGW WenKai TC","Songti TC",serif;
+    --brush:"LXGW WenKai TC","Noto Serif TC","Songti TC",serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
     background:var(--sumi);
     color:var(--paper);
-    font-family:"Noto Serif TC","Songti TC","STSong",serif;
+    font-family:var(--serif);
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
   img{display:block;max-width:100%}
 
-  /* 紙紋 + 噪點 */
+  /* 淡墨暈染雲氣（讓黑不死板） */
   body::before{
     content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(140% 120% at 50% -10%, rgba(40,38,34,.55), transparent 60%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/></svg>");
-    mix-blend-mode:screen;
+      radial-gradient(60% 45% at 18% 22%, rgba(78,74,66,.55), transparent 62%),
+      radial-gradient(55% 50% at 82% 30%, rgba(58,55,50,.5), transparent 60%),
+      radial-gradient(70% 55% at 50% 88%, rgba(70,60,52,.42), transparent 62%),
+      radial-gradient(120% 100% at 50% -8%, rgba(46,43,38,.6), transparent 60%);
+  }
+  /* 宣紙紙紋 + 噪點（明顯） */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.6;mix-blend-mode:overlay;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/></svg>");
   }
 
   .scene{
@@ -54,17 +67,35 @@
   /* ---------- 開場 ---------- */
   #hero{
     flex-direction:column;justify-content:center;align-items:center;
-    text-align:center;min-height:100vh;gap:0;
+    text-align:center;min-height:100vh;gap:0;position:relative;
   }
+  /* 禪宗圓相 enso */
+  .enso{
+    position:absolute;top:50%;left:50%;
+    width:min(72vmin,640px);height:min(72vmin,640px);
+    transform:translate(-50%,-58%) rotate(-12deg);
+    z-index:0;pointer-events:none;opacity:.9;
+    animation:ensoIn 2.4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .enso path{
+    fill:none;stroke:#efe7d6;stroke-width:14;stroke-linecap:round;
+    filter:drop-shadow(0 0 14px rgba(255,250,240,.25));
+    stroke-dasharray:1600;stroke-dashoffset:1600;
+    animation:draw 2.6s cubic-bezier(.3,.7,.2,1) .2s forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes ensoIn{from{opacity:0}to{opacity:.9}}
   .hero-title{
-    font-size:clamp(5rem,26vw,16rem);
-    font-weight:900;
-    letter-spacing:.05em;
+    font-family:var(--brush);
+    font-size:clamp(6rem,30vw,18rem);
+    font-weight:400;
+    letter-spacing:.08em;
     color:var(--paper);
-    text-shadow:0 0 60px rgba(0,0,0,.8);
-    position:relative;
+    text-shadow:0 0 60px rgba(0,0,0,.85), 0 0 18px rgba(0,0,0,.9);
+    position:relative;z-index:2;
   }
   .seal{
+    font-family:var(--brush);
     display:inline-grid;place-items:center;
     width:clamp(54px,8vw,84px);height:clamp(54px,8vw,84px);
     border:3px solid var(--cinnabar);
@@ -119,8 +150,15 @@
     margin-bottom:22px;
   }
   h2{
-    font-size:clamp(2rem,7vw,3.4rem);font-weight:900;letter-spacing:.1em;
-    margin-bottom:34px;line-height:1.15;
+    font-family:var(--brush);
+    font-size:clamp(2.4rem,8vw,4rem);font-weight:400;letter-spacing:.1em;
+    margin-bottom:34px;line-height:1.2;position:relative;display:inline-block;
+    padding-bottom:22px;
+  }
+  /* 毛筆飛白橫掃 */
+  h2::after{
+    content:"";position:absolute;left:-6px;bottom:0;width:min(220px,70%);height:16px;
+    background:no-repeat center/100% 100% url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='16' viewBox='0 0 220 16'><path d='M2,9 C40,3 70,12 110,7 C150,2 180,11 218,6' stroke='%23c0392b' stroke-width='7' fill='none' stroke-linecap='round'/><path d='M6,12 C50,9 90,14 140,10 C175,7 200,12 214,11' stroke='%23c0392b' stroke-width='2.5' fill='none' stroke-linecap='round' opacity='0.6'/></svg>");
   }
   h2 .ink{color:var(--gold)}
   .body{max-width:680px}
@@ -148,7 +186,7 @@
     min-height:300px;
   }
   .scroll-col .when{color:var(--cinnabar-2);writing-mode:vertical-rl;letter-spacing:.2em;font-size:.8rem;margin-bottom:14px;display:inline-block}
-  .scroll-col h3{writing-mode:vertical-rl;font-size:1.5rem;font-weight:900;letter-spacing:.15em;margin:0 18px 0 0;display:inline-block;vertical-align:top;height:240px}
+  .scroll-col h3{font-family:var(--brush);writing-mode:vertical-rl;font-size:1.7rem;font-weight:400;letter-spacing:.15em;margin:0 18px 0 0;display:inline-block;vertical-align:top;height:240px}
   .scroll-col p{writing-mode:vertical-rl;color:var(--paper-dim);letter-spacing:.12em;line-height:1.9;font-size:.98rem;display:inline-block;vertical-align:top;height:260px;margin-right:8px}
   .scroll-inner{display:flex;align-items:flex-start}
   .hint-h{color:rgba(201,168,106,.55);font-size:.72rem;letter-spacing:.3em;margin-top:14px}
@@ -159,14 +197,15 @@
   .legend{background:var(--sumi);padding:34px 28px;transition:background .4s}
   .legend:hover{background:var(--sumi-2)}
   .legend .n{color:var(--cinnabar);font-size:.8rem;letter-spacing:.3em;margin-bottom:14px}
-  .legend h3{font-size:1.5rem;font-weight:900;letter-spacing:.12em;margin-bottom:12px}
+  .legend h3{font-family:var(--brush);font-size:1.8rem;font-weight:400;letter-spacing:.12em;margin-bottom:12px}
   .legend p{color:var(--paper-dim);font-size:.98rem;line-height:1.9}
 
   /* 偈語 */
   #verse{justify-content:center;text-align:center;min-height:100vh}
   #verse .v{
+    font-family:var(--brush);
     margin:0 auto;height:min(70vh,560px);
-    font-size:clamp(1.8rem,5.2vw,3rem);font-weight:700;letter-spacing:.35em;
+    font-size:clamp(2.1rem,6vw,3.4rem);font-weight:400;letter-spacing:.35em;
     color:#f2ead9;
   }
   #verse .v em{color:var(--cinnabar-2);font-style:normal}
@@ -176,7 +215,7 @@
   #dharma{flex-direction:column;align-items:flex-start}
   .four{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,2.5vw,30px);width:100%}
   .four .one{text-align:center;padding:24px 6px;border-top:2px solid var(--cinnabar)}
-  .four .one .v{height:170px;margin:0 auto 14px;font-size:clamp(1.4rem,3.5vw,2rem);font-weight:900;letter-spacing:.2em}
+  .four .one .v{font-family:var(--brush);height:180px;margin:0 auto 14px;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:400;letter-spacing:.2em}
   .four .one p{color:var(--paper-dim);font-size:.85rem;line-height:1.7;letter-spacing:.05em}
   @media(max-width:680px){.four{grid-template-columns:repeat(2,1fr)}}
 
@@ -196,6 +235,13 @@
 <body>
 
 <section id="hero" class="scene">
+  <svg class="enso" viewBox="0 0 600 600" aria-hidden="true">
+    <path d="M312 70
+             C150 60 70 200 80 330
+             C90 470 220 540 340 530
+             C470 519 545 410 530 290
+             C516 178 430 96 318 92"/>
+  </svg>
   <div class="seal">禪</div>
   <h1 class="hero-title">達摩</h1>
   <div class="hero-sub">菩 提 達 摩 ・ 東 土 初 祖</div>
