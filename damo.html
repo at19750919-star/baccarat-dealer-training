@@ -26,13 +26,20 @@
   }
   img{display:block;max-width:100%}
 
-  /* 紙紋 + 噪點 */
+  /* 淡墨暈染雲氣（讓黑不死板） */
   body::before{
     content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(140% 120% at 50% -10%, rgba(40,38,34,.55), transparent 60%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/></svg>");
-    mix-blend-mode:screen;
+      radial-gradient(60% 45% at 18% 22%, rgba(78,74,66,.55), transparent 62%),
+      radial-gradient(55% 50% at 82% 30%, rgba(58,55,50,.5), transparent 60%),
+      radial-gradient(70% 55% at 50% 88%, rgba(70,60,52,.42), transparent 62%),
+      radial-gradient(120% 100% at 50% -8%, rgba(46,43,38,.6), transparent 60%);
+  }
+  /* 宣紙紙紋 + 噪點（明顯） */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.6;mix-blend-mode:overlay;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/></svg>");
   }
 
   .scene{
@@ -54,15 +61,31 @@
   /* ---------- 開場 ---------- */
   #hero{
     flex-direction:column;justify-content:center;align-items:center;
-    text-align:center;min-height:100vh;gap:0;
+    text-align:center;min-height:100vh;gap:0;position:relative;
   }
+  /* 禪宗圓相 enso */
+  .enso{
+    position:absolute;top:50%;left:50%;
+    width:min(72vmin,640px);height:min(72vmin,640px);
+    transform:translate(-50%,-58%) rotate(-12deg);
+    z-index:0;pointer-events:none;opacity:.9;
+    animation:ensoIn 2.4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .enso path{
+    fill:none;stroke:#efe7d6;stroke-width:14;stroke-linecap:round;
+    filter:drop-shadow(0 0 14px rgba(255,250,240,.25));
+    stroke-dasharray:1600;stroke-dashoffset:1600;
+    animation:draw 2.6s cubic-bezier(.3,.7,.2,1) .2s forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes ensoIn{from{opacity:0}to{opacity:.9}}
   .hero-title{
     font-size:clamp(5rem,26vw,16rem);
     font-weight:900;
     letter-spacing:.05em;
     color:var(--paper);
-    text-shadow:0 0 60px rgba(0,0,0,.8);
-    position:relative;
+    text-shadow:0 0 60px rgba(0,0,0,.85), 0 0 18px rgba(0,0,0,.9);
+    position:relative;z-index:2;
   }
   .seal{
     display:inline-grid;place-items:center;
@@ -120,7 +143,13 @@
   }
   h2{
     font-size:clamp(2rem,7vw,3.4rem);font-weight:900;letter-spacing:.1em;
-    margin-bottom:34px;line-height:1.15;
+    margin-bottom:34px;line-height:1.15;position:relative;display:inline-block;
+    padding-bottom:22px;
+  }
+  /* 毛筆飛白橫掃 */
+  h2::after{
+    content:"";position:absolute;left:-6px;bottom:0;width:min(220px,70%);height:16px;
+    background:no-repeat center/100% 100% url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='16' viewBox='0 0 220 16'><path d='M2,9 C40,3 70,12 110,7 C150,2 180,11 218,6' stroke='%23c0392b' stroke-width='7' fill='none' stroke-linecap='round'/><path d='M6,12 C50,9 90,14 140,10 C175,7 200,12 214,11' stroke='%23c0392b' stroke-width='2.5' fill='none' stroke-linecap='round' opacity='0.6'/></svg>");
   }
   h2 .ink{color:var(--gold)}
   .body{max-width:680px}
@@ -196,6 +225,13 @@
 <body>
 
 <section id="hero" class="scene">
+  <svg class="enso" viewBox="0 0 600 600" aria-hidden="true">
+    <path d="M312 70
+             C150 60 70 200 80 330
+             C90 470 220 540 340 530
+             C470 519 545 410 530 290
+             C516 178 430 96 318 92"/>
+  </svg>
   <div class="seal">禪</div>
   <h1 class="hero-title">達摩</h1>
   <div class="hero-sub">菩 提 達 摩 ・ 東 土 初 祖</div>
