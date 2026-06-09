@@ -343,9 +343,9 @@ function openProps(g){
   $('rowH').classList.toggle('hide', isPhoto||isModel);
   $('rowD').classList.toggle('hide', isPhoto||isModel);
   if(!isPhoto&&!isModel) $('pcolor').value = '#'+u.color.toString(16).padStart(6,'0');
-  $('pw').value=u.w; $('pwv').textContent=u.w.toFixed(2);
-  $('ph').value=u.h; $('phv').textContent=u.h.toFixed(2);
-  $('pd').value=u.d; $('pdv').textContent=u.d.toFixed(2);
+  $('pw').value=u.w; $('pwv').textContent=(u.w??0).toFixed(2);
+  $('ph').value=u.h??0; $('phv').textContent=(u.h??0).toFixed(2);
+  $('pd').value=u.d??0; $('pdv').textContent=(u.d??0).toFixed(2);
   $('py').value=u.yOff; $('pyv').textContent=u.yOff.toFixed(2);
   const deg=((Math.round(u_deg(g))%360)+360)%360;
   $('pr').value=deg; $('prv').textContent=deg;
