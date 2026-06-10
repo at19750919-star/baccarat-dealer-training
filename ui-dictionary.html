@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>可視化 UI 詞典・vibeCoder 速查</title>
+<link rel="apple-touch-icon" href="icons/hub-180.png">
+<link rel="icon" type="image/png" href="icons/hub-192.png">
+<meta name="theme-color" content="#1b2430">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UI詞典">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:linear-gradient(160deg,#1b2430,#0f1620);color:#e8eef5;min-height:100vh;padding:24px 14px 70px}
+  .wrap{max-width:1040px;margin:0 auto}
+  header{text-align:center;margin-bottom:18px}
+  header .eyebrow{color:#6fa8ff;font-size:.74rem;letter-spacing:.22em;font-weight:700;margin-bottom:8px}
+  header h1{font-size:1.75rem;letter-spacing:.04em;margin-bottom:8px}
+  header p{color:#8fa0b3;font-size:.88rem;line-height:1.6}
+  .back{display:inline-block;margin-top:12px;color:#6fd1a6;text-decoration:none;font-size:.82rem;
+    border:1px solid rgba(111,209,166,.35);border-radius:20px;padding:5px 14px}
+  .back:hover{background:rgba(111,209,166,.12)}
+
+  /* 頂部說明：hover / press / 狀態 */
+  .note{background:rgba(47,109,240,.1);border:1px solid rgba(111,168,255,.3);border-radius:14px;
+    padding:14px 16px;margin:18px auto 6px;font-size:.82rem;color:#cdd9e6;line-height:1.7;max-width:760px}
+  .note b{color:#6fa8ff}
+
+  /* 工具列 */
+  .toolbar{position:sticky;top:0;z-index:30;background:rgba(15,22,32,.92);backdrop-filter:blur(8px);
+    padding:14px 0 10px;margin:14px 0 6px}
+  .search{width:100%;max-width:340px;display:block;margin:0 auto 12px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:22px;color:#e8eef5;font-size:.9rem;
+    padding:10px 16px;outline:none}
+  .search:focus{border-color:#2f6df0}
+  .search::placeholder{color:#7c8b9d}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#b9c6d4;
+    border-radius:18px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:.15s}
+  .chip:hover{background:rgba(255,255,255,.12)}
+  .chip.on{background:#2f6df0;border-color:#2f6df0;color:#fff;font-weight:700}
+
+  /* 卡片網格 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:8px}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;
+    overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:rgba(111,168,255,.4)}
+  .card.hide{display:none}
+
+  /* 預覽畫布（淺色，像真實 UI） */
+  .pv{background:#eef1f6;min-height:104px;display:flex;align-items:center;justify-content:center;
+    gap:10px;padding:18px;color:#1b2430;position:relative;flex-wrap:wrap}
+  .meta{padding:13px 15px 15px}
+  .name{font-size:1.02rem;font-weight:700;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+  .name .en{font-size:.72rem;color:#7c8b9d;font-weight:500;letter-spacing:.04em}
+  .def{color:#aebccb;font-size:.8rem;line-height:1.6;margin-top:5px}
+  .use{color:#8fa0b3;font-size:.76rem;line-height:1.6;margin-top:6px}
+  .use b{color:#6fd1a6;font-weight:700}
+
+  /* ===== 迷你組件樣式 ===== */
+  .btn{font:600 13px/1 inherit;padding:9px 16px;border-radius:8px;border:0;cursor:pointer}
+  .btn.primary{background:#2f6df0;color:#fff}
+  .btn.hover{background:#1f56cc;box-shadow:0 4px 12px rgba(47,109,240,.4)}
+  .btn.ghost{background:#fff;color:#2f6df0;border:1.5px solid #2f6df0}
+  .btn.dis{background:#c7cfda;color:#fff;cursor:not-allowed}
+  .stlbl{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.62rem;color:#6b7c8f}
+  .iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:#fff;color:#2f6df0;font-size:17px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);cursor:pointer}
+  .fab{width:50px;height:50px;border-radius:50%;border:0;background:#2f6df0;color:#fff;font-size:24px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(47,109,240,.45);cursor:pointer}
+  .lnk{color:#2f6df0;text-decoration:underline;text-underline-offset:3px;font-size:14px;font-weight:600;cursor:pointer}
+  .field{width:170px}
+  .field label{display:block;font-size:.66rem;color:#6b7c8f;margin-bottom:4px}
+  .field .inp{background:#fff;border:1.5px solid #cdd5e0;border-radius:8px;padding:8px 10px;font-size:13px;color:#1b2430;display:flex;align-items:center;gap:6px}
+  .field .inp.focus{border-color:#2f6df0;box-shadow:0 0 0 3px rgba(47,109,240,.15)}
+  .field .inp .ph{color:#9aa6b4}
+  .cap{width:fit-content;display:flex;gap:18px}
+  .opt{display:flex;align-items:center;gap:7px;font-size:13px;color:#1b2430}
+  .box{width:18px;height:18px;border-radius:5px;border:2px solid #aab4c2;display:flex;align-items:center;justify-content:center}
+  .box.ck{background:#2f6df0;border-color:#2f6df0;color:#fff;font-size:12px}
+  .dot{width:18px;height:18px;border-radius:50%;border:2px solid #aab4c2}
+  .dot.ck{border-color:#2f6df0}.dot.ck::after{content:'';display:block;width:9px;height:9px;border-radius:50%;background:#2f6df0;margin:2.5px}
+  .sw{width:46px;height:27px;border-radius:14px;background:#c7cfda;position:relative;cursor:pointer;transition:.22s}
+  .sw.on{background:#2f6df0}
+  .sw::after{content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.22s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .sw.on::after{left:22px}
+  .sel{width:160px;background:#fff;border:1.5px solid #cdd5e0;border-radius:8px;padding:9px 12px;font-size:13px;
+    color:#1b2430;display:flex;justify-content:space-between;align-items:center}
+  .sld{width:140px;height:5px;border-radius:3px;background:#cdd5e0;position:relative}
+  .sld::before{content:'';position:absolute;left:0;top:0;height:100%;width:58%;background:#2f6df0;border-radius:3px}
+  .sld::after{content:'';position:absolute;left:58%;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #2f6df0;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .prog{width:150px;height:9px;border-radius:5px;background:#dde3ec;overflow:hidden}
+  .prog>i{display:block;height:100%;width:65%;background:linear-gradient(90deg,#2f6df0,#5b8cff);border-radius:5px}
+  .spin{width:32px;height:32px;border-radius:50%;border:3px solid #d4dbe6;border-top-color:#2f6df0;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .sk{width:160px}
+  .sk i{display:block;height:11px;border-radius:6px;margin-bottom:9px;
+    background:linear-gradient(90deg,#dfe5ee 25%,#eef1f6 50%,#dfe5ee 75%);background-size:200% 100%;animation:sh 1.3s infinite}
+  .sk i:nth-child(2){width:70%}.sk i:nth-child(3){width:85%;margin-bottom:0}
+  @keyframes sh{to{background-position:-200% 0}}
+  .toast{background:#1b2430;color:#fff;padding:10px 15px;border-radius:11px;font-size:12.5px;
+    display:flex;gap:9px;align-items:center;box-shadow:0 8px 22px rgba(0,0,0,.3)}
+  .tag{font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:20px}
+  .tag.g{background:#d6f0e2;color:#1f8a5b}.tag.y{background:#fbe6c8;color:#a9711a}.tag.r{background:#f8d7d7;color:#c0392b}
+  .tip{position:relative;background:#1b2430;color:#fff;font-size:12px;padding:6px 11px;border-radius:7px}
+  .tip::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1b2430;border-bottom:0}
+  .pop{position:relative;background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 12px;font-size:12.5px;color:#1b2430;width:150px}
+  .pop::after{content:'';position:absolute;top:-6px;left:24px;border:6px solid transparent;border-bottom-color:#fff;border-top:0}
+  .pop .mi{padding:6px 4px;border-bottom:1px solid #eef1f6}.pop .mi:last-child{border:0}
+  .menu{background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);width:150px;overflow:hidden;font-size:13px}
+  .menu div{padding:9px 14px;color:#1b2430}.menu div:hover{background:#f1f4f9}
+  .menu div.del{color:#c0392b}
+  .tabs{display:flex;gap:20px;border-bottom:1.5px solid #d4dbe6}
+  .tabs span{padding-bottom:9px;font-size:13px;color:#7c8b9d}
+  .tabs span.act{color:#2f6df0;border-bottom:2.5px solid #2f6df0;font-weight:700;margin-bottom:-1.5px}
+  .pagi{display:flex;gap:6px;align-items:center}
+  .pagi b,.pagi span{min-width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff;color:#1b2430;border:1px solid #d4dbe6}
+  .pagi b.act{background:#2f6df0;color:#fff;border-color:#2f6df0}
+  .step{display:flex;align-items:center;font-size:11px;color:#7c8b9d}
+  .step i{width:24px;height:24px;border-radius:50%;background:#cdd5e0;color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700}
+  .step i.done{background:#2f6df0}
+  .step .ln{width:26px;height:2px;background:#cdd5e0}.step .ln.done{background:#2f6df0}
+  .bnav{display:flex;gap:22px;background:#fff;border-radius:12px;padding:9px 16px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .bnav span{font-size:20px;opacity:.4}.bnav span.act{opacity:1;color:#2f6df0}
+  .bc{font-size:12.5px;color:#7c8b9d}.bc b{color:#1b2430;font-weight:600}
+  .avts{display:flex}
+  .av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;border:2px solid #eef1f6;margin-left:-8px}
+  .av:first-child{margin-left:0}
+  .empty{text-align:center;color:#9aa6b4;font-size:12px}.empty .ic{font-size:30px;opacity:.5}
+  /* 迷你彈窗示意 */
+  .modalmini{width:150px;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:12px;font-size:11px;color:#1b2430}
+  .modalmini .ttl{font-weight:700;font-size:12px;margin-bottom:5px}
+  .modalmini .row{display:flex;gap:6px;justify-content:flex-end;margin-top:9px}
+  .modalmini .b{font-size:10px;padding:5px 9px;border-radius:6px}
+  .modalmini .b.c{background:#eef1f6;color:#6b7c8f}.modalmini .b.k{background:#c0392b;color:#fff}
+  .sheet{width:150px;align-self:flex-end;background:#fff;border-radius:12px 12px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.15);padding:12px;font-size:11px;color:#1b2430}
+  .sheet .grab{width:34px;height:4px;border-radius:2px;background:#cdd5e0;margin:0 auto 9px}
+  .sheet .li{padding:6px 2px;border-bottom:1px solid #f1f4f9}
+  .drawer{width:100%;height:104px;background:#eef1f6;position:relative;overflow:hidden;border-radius:4px}
+  .drawer .pan{position:absolute;left:0;top:0;height:100%;width:62%;background:#fff;box-shadow:4px 0 14px rgba(0,0,0,.12);padding:12px;font-size:11px;color:#1b2430}
+  .drawer .pan .li{padding:6px 0;border-bottom:1px solid #f1f4f9}
+  .demo{margin-top:9px;width:100%;text-align:center;background:#2f6df0;color:#fff;border:0;border-radius:8px;padding:8px;font-size:.78rem;font-weight:700;cursor:pointer}
+  .demo:hover{background:#3f7bff}
+
+  /* 真實彈窗示範 */
+  .overlay{position:fixed;inset:0;background:rgba(15,22,32,.6);backdrop-filter:blur(2px);display:none;
+    align-items:center;justify-content:center;z-index:100;padding:20px;animation:fade .2s}
+  .overlay.show{display:flex}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .dialog{background:#fff;color:#1b2430;border-radius:16px;padding:22px;max-width:320px;width:100%;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);animation:pop .25s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .dialog h3{font-size:1.1rem;margin-bottom:8px}
+  .dialog p{font-size:.85rem;color:#6b7c8f;line-height:1.6}
+  .dialog .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+  .dialog .acts button{padding:9px 16px;border-radius:8px;border:0;font-size:.85rem;font-weight:700;cursor:pointer}
+  .dialog .acts .c{background:#eef1f6;color:#6b7c8f}
+  .dialog .acts .k{background:#c0392b;color:#fff}
+  #liveToast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:#1f8a5b;color:#fff;padding:12px 20px;border-radius:11px;font-size:.85rem;font-weight:600;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:120;transition:.3s;pointer-events:none}
+  #liveToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  footer{text-align:center;margin-top:34px;color:#6b7c8f;font-size:.76rem;line-height:1.8}
+  .noresult{text-align:center;color:#7c8b9d;padding:40px;font-size:.9rem;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">VISUAL UI DICTIONARY</div>
+    <h1>🧩 可視化 UI 詞典</h1>
+    <p>給 vibeCoder 的交互速查手冊・每個組件都有<b style="color:#6fa8ff">迷你預覽 + 文字說明</b><br>看一眼就知道長怎樣、什麼時候用、要寫進提示詞</p>
+    <a class="back" href="hub.html">← 回總覽</a>
+  </header>
+
+  <div class="note">
+    💡 <b>先搞懂「狀態」這個詞</b>：寫提示詞最常漏的就是狀態。
+    <b>hover（懸停）</b>＝滑鼠移上去（手機沒有）；
+    <b>press / active（按下）</b>＝手指或滑鼠按住（手機端主要靠這個）；
+    <b>focus（聚焦）</b>＝點進輸入框；
+    <b>disabled（禁用）</b>＝條件不足時灰掉。
+    一個按鈕至少要交代 <b>預設 / hover / 按下 / 禁用 / loading</b> 五態，AI 才知道怎麼做。
+  </div>
+
+  <div class="toolbar">
+    <input id="search" class="search" placeholder="🔍 搜尋組件（中／英文都可，如 modal、開關…）">
+    <div class="chips" id="chips">
+      <span class="chip on" data-c="all">全部</span>
+      <span class="chip" data-c="action">操作</span>
+      <span class="chip" data-c="input">輸入</span>
+      <span class="chip" data-c="overlay">浮層</span>
+      <span class="chip" data-c="feedback">反饋</span>
+      <span class="chip" data-c="nav">導航</span>
+      <span class="chip" data-c="content">內容</span>
+    </div>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <!-- ===== 操作 ===== -->
+    <div class="card" data-c="action">
+      <div class="pv">
+        <div class="stlbl"><button class="btn primary">確認</button>預設</div>
+        <div class="stlbl"><button class="btn primary hover">確認</button>hover</div>
+        <div class="stlbl"><button class="btn dis">確認</button>禁用</div>
+      </div>
+      <div class="meta">
+        <div class="name">主要按鈕 <span class="en">Primary Button</span></div>
+        <div class="def">頁面上最重要、希望使用者點的那個動作，整頁通常只有一個。</div>
+        <div class="use"><b>何時用：</b>提交、確認、下一步。記得交代 hover／按下／禁用三態。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="action">
+      <div class="pv"><button class="btn ghost">取消</button></div>
+      <div class="meta">
+        <div class="name">次要按鈕 <span class="en">Secondary / Ghost</span></div>
+        <div class="def">次要動作，用描邊或淺色，視覺上「讓位」給主要按鈕。</div>
+        <div class="use"><b>何時用：</b>取消、返回、輔助操作，跟主要按鈕並排出現。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="action">
+      <div class="pv"><button class="iconbtn">🔍</button><button class="iconbtn">⋯</button><button class="iconbtn">🗑️</button></div>
+      <div class="meta">
+        <div class="name">圖示按鈕 <span class="en">Icon Button</span></div>
+        <div class="def">只有一個圖示、沒有文字的按鈕，省空間。</div>
+        <div class="use"><b>何時用：</b>工具列、卡片角落。一定要配 tooltip 說明，不然看不懂。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="action">
+      <div class="pv"><button class="fab">＋</button></div>
+      <div class="meta">
+        <div class="name">懸浮操作按鈕 <span class="en">FAB</span></div>
+        <div class="def">浮在右下角的圓形主按鈕，捲動時固定不動。</div>
+        <div class="use"><b>何時用：</b>該頁最核心的單一動作，如「新增」「發文」。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="action">
+      <div class="pv"><span class="lnk">查看詳情 →</span></div>
+      <div class="meta">
+        <div class="name">文字連結 <span class="en">Link</span></div>
+        <div class="def">跳轉到另一個位置或頁面，帶底線、藍色。</div>
+        <div class="use"><b>何時用：</b>「導航」用連結，「執行動作」用按鈕，別混。</div>
+      </div>
+    </div>
+
+    <!-- ===== 輸入 ===== -->
+    <div class="card" data-c="input">
+      <div class="pv">
+        <div class="field"><label>電子郵件</label><div class="inp focus">name@mail.com</div></div>
+      </div>
+      <div class="meta">
+        <div class="name">文字輸入框 <span class="en">Text Field</span></div>
+        <div class="def">讓使用者打字輸入，聚焦(focus)時邊框高亮。</div>
+        <div class="use"><b>何時用：</b>表單。記得交代 placeholder、focus 與錯誤狀態。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="field"><div class="inp"><span>🔍</span><span class="ph">搜尋…</span></div></div></div>
+      <div class="meta">
+        <div class="name">搜尋框 <span class="en">Search</span></div>
+        <div class="def">帶放大鏡圖示的輸入框，通常即時過濾結果。</div>
+        <div class="use"><b>何時用：</b>清單／列表很長，需要快速找到某一項時。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="cap">
+        <div class="opt"><span class="box ck">✓</span>已選</div>
+        <div class="opt"><span class="box"></span>未選</div>
+      </div></div>
+      <div class="meta">
+        <div class="name">複選框 <span class="en">Checkbox</span></div>
+        <div class="def">可以「多選」或單獨開關一個條件。</div>
+        <div class="use"><b>何時用：</b>同意條款、多選清單、批次選取。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="cap">
+        <div class="opt"><span class="dot ck"></span>選項 A</div>
+        <div class="opt"><span class="dot"></span>選項 B</div>
+      </div></div>
+      <div class="meta">
+        <div class="name">單選按鈕 <span class="en">Radio</span></div>
+        <div class="def">一組裡「只能選一個」，互斥。</div>
+        <div class="use"><b>何時用：</b>性別、付款方式等只能擇一的選項（≤5 項）。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="sw on" onclick="this.classList.toggle('on')"></div><div class="sw" onclick="this.classList.toggle('on')"></div></div>
+      <div class="meta">
+        <div class="name">開關 <span class="en">Switch / Toggle</span></div>
+        <div class="def">即時生效的「開/關」，不需要再按儲存。（試點我）</div>
+        <div class="use"><b>何時用：</b>設定頁的單一功能，如「深色模式」「通知」。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="sel">最新優先 <span>▾</span></div></div>
+      <div class="meta">
+        <div class="name">下拉選擇 <span class="en">Select</span></div>
+        <div class="def">點開後從固定清單選一個，選項多時用它收起來。</div>
+        <div class="use"><b>何時用：</b>選項 5 個以上、平時不需一直顯示時。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="input">
+      <div class="pv"><div class="sld"></div></div>
+      <div class="meta">
+        <div class="name">滑桿 <span class="en">Slider</span></div>
+        <div class="def">拖動選一個範圍內的數值，重直覺、輕精確。</div>
+        <div class="use"><b>何時用：</b>音量、亮度、價格區間這類連續數值。</div>
+      </div>
+    </div>
+
+    <!-- ===== 浮層 ===== -->
+    <div class="card" data-c="overlay">
+      <div class="pv">
+        <div class="modalmini">
+          <div class="ttl">確定刪除？</div>此操作無法復原
+          <div class="row"><span class="b c">取消</span><span class="b k">刪除</span></div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">彈窗 <span class="en">Modal / Dialog</span></div>
+        <div class="def">居中浮窗 + 半透明遮罩，<b style="color:#aebccb">擋住背後</b>強制使用者處理。</div>
+        <div class="use"><b>何時用：</b>需要使用者「做決定」時，如刪除確認、必填表單。</div>
+        <button class="demo" onclick="openModal()">▶ 開啟真實示範</button>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv" style="align-items:flex-end;padding-bottom:0">
+        <div class="sheet"><div class="grab"></div><div class="li">分享</div><div class="li">複製連結</div><div class="li">檢舉</div></div>
+      </div>
+      <div class="meta">
+        <div class="name">底部彈出 <span class="en">Bottom Sheet</span></div>
+        <div class="def">從螢幕底部上滑出現，手機端比 Modal 更順手。</div>
+        <div class="use"><b>何時用：</b>手機端的選項選單、篩選、詳情。桌面端常改用 Modal。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv" style="padding:0">
+        <div class="drawer"><div class="pan"><div class="li">🏠 首頁</div><div class="li">📁 專案</div><div class="li">⚙️ 設定</div></div></div>
+      </div>
+      <div class="meta">
+        <div class="name">抽屜 <span class="en">Drawer</span></div>
+        <div class="def">從側邊滑出的面板，常放導航選單。</div>
+        <div class="use"><b>何時用：</b>手機漢堡選單、側邊篩選欄。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv"><div class="pop"><div class="mi">✏️ 編輯</div><div class="mi">📋 複製</div><div class="mi">🔗 分享</div></div></div>
+      <div class="meta">
+        <div class="name">氣泡卡 <span class="en">Popover</span></div>
+        <div class="def">點擊觸發、指向某元素的小卡片，可放選項或內容。</div>
+        <div class="use"><b>何時用：</b>「更多操作」迷你選單、欄位補充說明。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv"><div class="tip">這是一段說明文字</div></div>
+      <div class="meta">
+        <div class="name">工具提示 <span class="en">Tooltip</span></div>
+        <div class="def">hover 才出現的純文字小提示，不能放按鈕。</div>
+        <div class="use"><b>何時用：</b>解釋一個圖示是什麼意思。手機沒 hover，慎用。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv"><div class="toast">✅ 已儲存</div></div>
+      <div class="meta">
+        <div class="name">輕提示 <span class="en">Toast / Snackbar</span></div>
+        <div class="def">一閃而過的通知，幾秒後自動消失，不打斷操作。</div>
+        <div class="use"><b>何時用：</b>「已儲存」「網路錯誤」等輕量回饋。</div>
+        <button class="demo" onclick="showToast()">▶ 跳一個 Toast</button>
+      </div>
+    </div>
+
+    <div class="card" data-c="overlay">
+      <div class="pv"><div class="menu"><div>複製</div><div>分享</div><div class="del">刪除</div></div></div>
+      <div class="meta">
+        <div class="name">右鍵選單 <span class="en">Context Menu</span></div>
+        <div class="def">在某元素上長按／右鍵叫出的動作清單。</div>
+        <div class="use"><b>何時用：</b>列表項、檔案的「更多操作」。</div>
+      </div>
+    </div>
+
+    <!-- ===== 反饋 ===== -->
+    <div class="card" data-c="feedback">
+      <div class="pv"><div class="prog"><i></i></div></div>
+      <div class="meta">
+        <div class="name">進度條 <span class="en">Progress Bar</span></div>
+        <div class="def">顯示明確進度（百分比），讓使用者知道還要多久。</div>
+        <div class="use"><b>何時用：</b>上傳、下載、多步驟完成度。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="feedback">
+      <div class="pv"><div class="spin"></div></div>
+      <div class="meta">
+        <div class="name">載入轉圈 <span class="en">Spinner</span></div>
+        <div class="def">不知道要多久時的「等待中」動畫。</div>
+        <div class="use"><b>何時用：</b>按鈕提交後、短時間請求。太久建議改骨架屏。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="feedback">
+      <div class="pv"><div class="sk"><i></i><i></i><i></i></div></div>
+      <div class="meta">
+        <div class="name">骨架屏 <span class="en">Skeleton</span></div>
+        <div class="def">內容載入前的灰色占位 + 微光掃動，比轉圈高級。</div>
+        <div class="use"><b>何時用：</b>列表、卡片、個人頁等版型固定的內容載入。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="feedback">
+      <div class="pv"><span class="tag g">成功</span><span class="tag y">待處理</span><span class="tag r">失敗</span></div>
+      <div class="meta">
+        <div class="name">狀態標籤 <span class="en">Tag / Badge</span></div>
+        <div class="def">用顏色小膠囊標示狀態或分類。</div>
+        <div class="use"><b>何時用：</b>訂單狀態、標籤分類、未讀數量。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="feedback">
+      <div class="pv"><div class="empty"><div class="ic">📭</div>這裡還沒有內容</div></div>
+      <div class="meta">
+        <div class="name">空狀態 <span class="en">Empty State</span></div>
+        <div class="def">清單為空時的占位插畫 + 一句引導文案。</div>
+        <div class="use"><b>何時用：</b>首次使用、搜尋無結果。別只留一片空白。</div>
+      </div>
+    </div>
+
+    <!-- ===== 導航 ===== -->
+    <div class="card" data-c="nav">
+      <div class="pv"><div class="tabs"><span class="act">全部</span><span>進行中</span><span>已完成</span></div></div>
+      <div class="meta">
+        <div class="name">標籤頁 <span class="en">Tabs</span></div>
+        <div class="def">在同一頁切換不同分類內容，當前頁有底線高亮。</div>
+        <div class="use"><b>何時用：</b>同一畫面下的 2～5 個平行分類。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="nav">
+      <div class="pv"><div class="pagi"><span>‹</span><span>1</span><b class="act">2</b><span>3</span><span>›</span></div></div>
+      <div class="meta">
+        <div class="name">分頁 <span class="en">Pagination</span></div>
+        <div class="def">把長清單切成多頁，逐頁翻看。</div>
+        <div class="use"><b>何時用：</b>資料量大、需要明確頁碼時（替代無限捲動）。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="nav">
+      <div class="pv"><div class="step"><i class="done">✓</i><span class="ln done"></span><i class="done">2</i><span class="ln"></span><i>3</i></div></div>
+      <div class="meta">
+        <div class="name">步進條 <span class="en">Stepper</span></div>
+        <div class="def">把流程拆成幾步，顯示「現在到哪、還剩幾步」。</div>
+        <div class="use"><b>何時用：</b>結帳、註冊、表單精靈等多步驟流程。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="nav">
+      <div class="pv"><div class="bnav"><span class="act">🏠</span><span>🔍</span><span>❤️</span><span>👤</span></div></div>
+      <div class="meta">
+        <div class="name">底部導航 <span class="en">Bottom Nav</span></div>
+        <div class="def">固定在手機底部的主導航，3～5 個圖示。</div>
+        <div class="use"><b>何時用：</b>App 的頂層切換：首頁／搜尋／我的。</div>
+      </div>
+    </div>
+
+    <div class="card" data-c="nav">
+      <div class="pv"><div class="bc"><b>首頁</b> › <b>分類</b> › 詳情</div></div>
+      <div class="meta">
+        <div class="name">麵包屑 <span class="en">Breadcrumb</span></div>
+        <div class="def">顯示「你在哪、怎麼回去」的層級路徑。</div>
+        <div class="use"><b>何時用：</b>層級較深的網站、後台管理系統。</div>
+      </div>
+    </div>
+
+    <!-- ===== 內容 ===== -->
+    <div class="card" data-c="content">
+      <div class="pv"><div class="avts">
+        <span class="av" style="background:#2f6df0">A</span>
+        <span class="av" style="background:#e6884f">B</span>
+        <span class="av" style="background:#6fd1a6">C</span>
+        <span class="av" style="background:#aab4c2">+9</span>
+      </div></div>
+      <div class="meta">
+        <div class="name">頭像 <span class="en">Avatar</span></div>
+        <div class="def">代表使用者的圓形圖／文字縮寫，可疊加成群組。</div>
+        <div class="use"><b>何時用：</b>留言、成員列表、協作者顯示。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="noresult" id="noresult">😶 找不到符合的組件，換個關鍵字試試</div>
+</div>
+
+<!-- 真實 Modal 示範 -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="dialog">
+    <h3>確定要刪除嗎？</h3>
+    <p>這是一個真實的 Modal 示範：帶遮罩、置中、彈出動畫，點遮罩或「取消」可關閉。這就是你要在提示詞裡描述的效果。</p>
+    <div class="acts">
+      <button class="c" onclick="closeModal()">取消</button>
+      <button class="k" onclick="closeModal();showToast('🗑️ 已刪除')">刪除</button>
+    </div>
+  </div>
+</div>
+<div id="liveToast">✅ 已儲存</div>
+
+<footer>
+  共 28 個常用組件・每個都有迷你預覽＋文字說明<br>
+  靈感來自 uiux.wiki 那種「可視化 UI 詞典」・這份可以自由複製、改成你自己的速查表
+</footer>
+
+<script>
+  // 分類篩選
+  const chips=document.querySelectorAll('.chip');
+  const cards=[...document.querySelectorAll('.card')];
+  const search=document.getElementById('search');
+  const noresult=document.getElementById('noresult');
+  let curCat='all';
+
+  function apply(){
+    const kw=search.value.trim().toLowerCase();
+    let shown=0;
+    cards.forEach(c=>{
+      const okCat = curCat==='all' || c.dataset.c===curCat;
+      const okKw  = !kw || c.textContent.toLowerCase().includes(kw);
+      const show = okCat && okKw;
+      c.classList.toggle('hide',!show);
+      if(show)shown++;
+    });
+    noresult.style.display = shown? 'none':'block';
+  }
+  chips.forEach(ch=>ch.onclick=()=>{
+    chips.forEach(x=>x.classList.remove('on'));
+    ch.classList.add('on');
+    curCat=ch.dataset.c;
+    apply();
+  });
+  search.oninput=apply;
+
+  // Modal / Toast 示範
+  const overlay=document.getElementById('overlay');
+  function openModal(){overlay.classList.add('show')}
+  function closeModal(){overlay.classList.remove('show')}
+  let toastT;
+  function showToast(msg){
+    const t=document.getElementById('liveToast');
+    if(msg)t.textContent=msg;
+    t.classList.add('show');
+    clearTimeout(toastT);
+    toastT=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
