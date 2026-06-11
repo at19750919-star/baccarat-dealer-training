@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特效百寶箱・FX Cookbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{min-height:100vh;font-family:"Noto Sans TC",system-ui,sans-serif;color:#e9e7f2;background:#0a0910;overflow-x:hidden}
+  .mono{font-family:"Space Grotesk",sans-serif}
+
+  /* 頁面本身的氛圍層 */
+  .mesh{position:fixed;inset:-25%;z-index:0;filter:blur(75px);opacity:.45;
+    background:radial-gradient(38% 38% at 22% 26%,#6d54e0,transparent),radial-gradient(34% 34% at 82% 22%,#1f9bb8,transparent),radial-gradient(40% 40% at 72% 82%,#c64f86,transparent);
+    animation:drift 22s ease-in-out infinite alternate}
+  @keyframes drift{50%{transform:translate(3%,-3%) scale(1.08)}100%{transform:translate(-3%,3%) scale(1.04)}}
+  .light{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.09),transparent 55%),radial-gradient(140% 120% at 50% 50%,transparent 60%,rgba(0,0,0,.5))}
+  .grain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .wrap{position:relative;z-index:3;max-width:960px;margin:0 auto;padding:54px 18px 90px}
+  h1{text-align:center;font-size:1.8rem;font-weight:800;letter-spacing:.03em;
+    background:linear-gradient(100deg,#fff 20%,#b79bff 45%,#7ee0ff 60%,#fff 80%);background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 6s linear infinite}
+  @keyframes shine{to{background-position:-200% center}}
+  .lead{text-align:center;color:#9b9ab4;font-size:.9rem;margin:10px 0 14px}
+  .sech{font-family:"Space Grotesk";font-size:.7rem;letter-spacing:.26em;color:#8ab4ff;font-weight:700;margin:34px 0 14px;text-transform:uppercase}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .fx{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;
+    display:flex;flex-direction:column;box-shadow:0 18px 40px -20px rgba(0,0,0,.7)}
+  .stage{height:130px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#0c0b13}
+  .meta{padding:13px 15px 14px}
+  .meta b{font-size:.96rem}.meta .one{font-size:.74rem;color:#8f8da6;line-height:1.5;margin:3px 0 10px}
+  .copy{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#cfd0e6;
+    font-family:inherit;font-size:.76rem;font-weight:700;padding:7px 14px;border-radius:9px;cursor:pointer;transition:.15s}
+  .copy:hover{background:rgba(255,255,255,.14)}
+
+  /* ───── demo 樣式 ───── */
+  .d-grain{width:120px;height:90px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#22d3ee);position:relative;overflow:hidden}
+  .d-grain::after{content:"";position:absolute;inset:0;opacity:.6;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E")}
+  .d-mesh{width:130px;height:96px;border-radius:12px;filter:blur(14px) saturate(1.3);
+    background:radial-gradient(50% 50% at 30% 30%,#7c5cff,transparent),radial-gradient(50% 50% at 75% 70%,#ff5fa2,transparent),radial-gradient(50% 50% at 60% 20%,#22d3ee,transparent);animation:drift 10s ease-in-out infinite alternate}
+  .d-light{width:130px;height:96px;border-radius:12px;background:#15131f;
+    background-image:radial-gradient(100% 70% at 50% -10%,rgba(255,255,255,.22),transparent 60%),radial-gradient(130% 120% at 50% 50%,transparent 55%,rgba(0,0,0,.6))}
+  .d-shine{font-family:"Space Grotesk";font-size:1.7rem;font-weight:700;
+    background:linear-gradient(100deg,#fff 20%,#b79bff 45%,#7ee0ff 60%,#fff 80%);background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 5s linear infinite}
+  .d-float{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#ff5fa2,#7c5cff);
+    box-shadow:0 16px 30px -10px rgba(124,92,255,.7);animation:float 4s ease-in-out infinite;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+  @keyframes float{50%{transform:translateY(-10px)}}
+  .d-glowb{position:relative;width:110px;height:64px;border-radius:14px;background:#0d0c14;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700}
+  .d-glowb::before{content:"";position:absolute;inset:-2px;border-radius:16px;z-index:-1;background:conic-gradient(from var(--angle),#7c5cff,#22d3ee,#ff5fa2,#7c5cff);animation:rot 5s linear infinite;filter:blur(5px)}
+  .d-glowb::after{content:"";position:absolute;inset:-2px;border-radius:16px;z-index:-1;background:conic-gradient(from var(--angle),#7c5cff,#22d3ee,#ff5fa2,#7c5cff);animation:rot 5s linear infinite}
+  @keyframes rot{to{--angle:360deg}}
+  .d-marq{width:100%;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+  .d-marq .t{display:inline-flex;gap:26px;white-space:nowrap;animation:slide 12s linear infinite;font-family:"Space Grotesk";font-size:.8rem;color:#b9b7d0}
+  @keyframes slide{to{transform:translateX(-50%)}}
+  .d-dot{width:130px;height:96px;border-radius:12px;background:#0e0c16;background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px);background-size:14px 14px;border:1px solid rgba(255,255,255,.08)}
+  .d-reveal{font-size:.86rem;color:#cdd0e6;animation:rev 3s ease-in-out infinite}
+  @keyframes rev{0%,40%{opacity:0;transform:translateY(16px)}60%,100%{opacity:1;transform:none}}
+
+  .d-spot{width:100%;height:100%;cursor:pointer;position:relative}
+  .d-spot::before{content:"移上來";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8f8da6;font-size:.82rem}
+  .d-spot::after{content:"";position:absolute;inset:0;opacity:0;transition:.25s;background:radial-gradient(130px circle at var(--x,50%) var(--y,50%),rgba(124,156,255,.4),transparent 60%)}
+  .d-spot:hover::after{opacity:1}
+  .tiltwrap{perspective:600px}.d-tilt{width:84px;height:84px;border-radius:16px;background:linear-gradient(135deg,#5b4bd6,#22a3c7);transform-style:preserve-3d;transition:transform .1s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+  .d-tilt .g{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.5),transparent 45%);mix-blend-mode:overlay}
+  .d-mag{padding:12px 24px;border-radius:24px;border:0;cursor:pointer;font:700 .85rem/1 inherit;color:#fff;background:linear-gradient(135deg,#ff5fa2,#7c5cff);box-shadow:0 8px 22px -8px rgba(124,92,255,.7);transition:transform .15s}
+  .d-goo{width:100%;height:100%;filter:url(#goo);position:relative}
+  .d-goo i{position:absolute;border-radius:50%;top:50%;transform:translateY(-50%)}
+  .d-goo .a{width:46px;height:46px;left:40px;background:#7c5cff}
+  .d-goo .b{width:40px;height:40px;background:#22d3ee;left:120px;animation:slid 3s ease-in-out infinite alternate}
+  @keyframes slid{to{left:70px}}
+  .d-glitch{font-family:"Space Grotesk";font-size:1.7rem;font-weight:700;position:relative;color:#fff}
+  .d-glitch::before,.d-glitch::after{content:attr(data-t);position:absolute;left:0;top:0}
+  .d-glitch::before{color:#ff2e6e;animation:gl .4s steps(2) infinite;clip-path:inset(0 0 55% 0)}
+  .d-glitch::after{color:#22d3ee;animation:gl2 .4s steps(2) infinite;clip-path:inset(55% 0 0 0)}
+  @keyframes gl{50%{transform:translate(-3px,-2px)}}@keyframes gl2{50%{transform:translate(3px,2px)}}
+  .d-burst{padding:12px 22px;border-radius:14px;border:1px solid rgba(255,255,255,.18);cursor:pointer;font:700 .85rem/1 inherit;color:#fff;background:rgba(255,255,255,.08)}
+  .confetti{position:fixed;width:9px;height:9px;z-index:99;pointer-events:none;border-radius:2px}
+  .d-liquid{width:120px;height:84px;border-radius:18px;position:relative;background:rgba(8,8,12,.25);
+    backdrop-filter:blur(1px) url(#liquid);-webkit-backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.5),inset 0 -8px 20px rgba(0,0,0,.5),0 14px 30px -10px rgba(0,0,0,.6);
+    display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700}
+  .liqbg{position:absolute;inset:0;z-index:-1;filter:blur(8px);background:radial-gradient(circle at 30% 40%,#7c5cff,transparent 60%),radial-gradient(circle at 70% 60%,#22d3ee,transparent 60%)}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);opacity:0;z-index:120;
+    background:rgba(20,18,28,.95);border:1px solid rgba(255,255,255,.14);color:#fff;padding:11px 20px;border-radius:12px;
+    font-size:.85rem;font-weight:600;box-shadow:0 14px 34px rgba(0,0,0,.5);transition:.3s;pointer-events:none;backdrop-filter:blur(8px)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/><feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"/></filter>
+  <filter id="liquid"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves="2" seed="8" result="n"/><feGaussianBlur in="n" stdDeviation="1.4" result="nb"/><feDisplacementMap in="SourceGraphic" in2="nb" scale="40" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<div class="mesh"></div><div class="light"></div><div class="grain"></div>
+
+<div class="wrap">
+  <h1>✨ 特效百寶箱</h1>
+  <p class="lead">16 個招數一次收藏 ・ 每個都有實時示範 + 「複製 CSS」・ 之後要整合時直接貼</p>
+
+  <div class="sech">零互動 · 打開就成立（手機也行）</div>
+  <div class="grid" id="g1"></div>
+
+  <div class="sech">互動 · 動手才出現</div>
+  <div class="grid" id="g2"></div>
+</div>
+<div id="toast"></div>
+
+<script>
+const ambient=[
+ {id:'grain',n:'顆粒質感膜',o:'整頁鋪一層極淡雜訊，瞬間有「貴」感',dom:'<div class="d-grain"></div>'},
+ {id:'mesh',n:'網格光暈背景',o:'多層漸層 + blur + 緩慢漂移',dom:'<div class="d-mesh"></div>'},
+ {id:'light',n:'頂部聚光 + 暗角',o:'給畫面一個光源方向，立刻立體',dom:'<div class="d-light"></div>'},
+ {id:'shine',n:'漸層流光標題',o:'文字自動掃光',dom:'<div class="d-shine">TITLE</div>'},
+ {id:'float',n:'呼吸浮動',o:'卡片極慢上下浮，有生命感',dom:'<div class="d-float">✦</div>'},
+ {id:'glowb',n:'自動旋轉光邊',o:'重點卡彩色邊自己轉一圈',dom:'<div class="d-glowb">重點</div>'},
+ {id:'marq',n:'無限跑馬燈',o:'公告自動橫向滑動',dom:'<div class="d-marq"><div class="t"><span>★ 公告一</span><span>★ 公告二</span><span>★ 公告三</span><span>★ 公告一</span><span>★ 公告二</span><span>★ 公告三</span></div></div>'},
+ {id:'dot',n:'點陣背景紋理',o:'區塊底加細點，不單調',dom:'<div class="d-dot"></div>'},
+ {id:'reveal',n:'捲動浮現',o:'捲到才淡入（唯一互動＝捲動）',dom:'<div class="d-reveal">捲動就浮現 ↑</div>'},
+];
+const inter=[
+ {id:'spot',n:'游標聚光卡',o:'光跟著滑鼠走',dom:'<div class="d-spot" data-fx="spot"></div>',full:1},
+ {id:'tilt',n:'3D 傾斜反光',o:'卡片依游標傾斜 + 反光',dom:'<div class="tiltwrap"><div class="d-tilt" data-fx="tilt">💎<div class="g"></div></div></div>'},
+ {id:'mag',n:'磁吸按鈕',o:'按鈕被游標吸過去',dom:'<button class="d-mag" data-fx="mag">吸我</button>'},
+ {id:'goo',n:'液態融合 metaball',o:'兩球靠近像水銀黏合（這顆自動來回）',dom:'<div class="d-goo"><i class="a"></i><i class="b"></i></div>',full:1},
+ {id:'glitch',n:'故障文字',o:'紅青雙層錯位抖動',dom:'<div class="d-glitch" data-t="GLITCH">GLITCH</div>'},
+ {id:'burst',n:'點擊噴彩',o:'點一下噴出粒子',dom:'<button class="d-burst" data-fx="burst">🎉 點我</button>'},
+ {id:'liquid',n:'液態玻璃',o:'真折射背後內容（Chrome 最佳）',dom:'<div class="liqbg"></div><div class="d-liquid">GLASS</div>'},
+];
+const snip={
+ grain:`/* 任一容器加一層雜訊膜（最關鍵的質感） */\n.grain{position:fixed;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;\n  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}`,
+ mesh:`.mesh{position:fixed;inset:-25%;z-index:-1;filter:blur(75px);opacity:.5;\n  background:radial-gradient(38% 38% at 22% 26%,#6d54e0,transparent),\n             radial-gradient(34% 34% at 82% 22%,#1f9bb8,transparent),\n             radial-gradient(40% 40% at 72% 82%,#c64f86,transparent);\n  animation:drift 22s ease-in-out infinite alternate}\n@keyframes drift{50%{transform:translate(3%,-3%) scale(1.08)}}`,
+ light:`.light{position:fixed;inset:0;pointer-events:none;\n  background:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.10),transparent 55%),\n             radial-gradient(140% 120% at 50% 50%,transparent 60%,rgba(0,0,0,.55))}`,
+ shine:`h1{background:linear-gradient(100deg,#fff 20%,#b79bff 45%,#7ee0ff 60%,#fff 80%);\n  background-size:200% auto;-webkit-background-clip:text;background-clip:text;\n  -webkit-text-fill-color:transparent;animation:shine 6s linear infinite}\n@keyframes shine{to{background-position:-200% center}}`,
+ float:`.float{animation:float 4s ease-in-out infinite}\n@keyframes float{50%{transform:translateY(-10px)}}`,
+ glowb:`@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}\n.glow{position:relative;background:#0d0c14}\n.glow::before{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:inherit;\n  background:conic-gradient(from var(--angle),#7c5cff,#22d3ee,#ff5fa2,#7c5cff);\n  animation:rot 5s linear infinite;filter:blur(6px)}\n@keyframes rot{to{--angle:360deg}}`,
+ marq:`.marq{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}\n.marq .t{display:inline-flex;gap:38px;white-space:nowrap;animation:slide 18s linear infinite}\n@keyframes slide{to{transform:translateX(-50%)}}/* 內容要複製兩份 */`,
+ dot:`.dot{background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);\n  background-size:18px 18px}`,
+ reveal:`.reveal{opacity:0;transform:translateY(20px);transition:.7s cubic-bezier(.16,.8,.3,1)}\n.reveal.in{opacity:1;transform:none}\n/* JS：*/\nnew IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.2})\n  .observe... document.querySelectorAll('.reveal').forEach(el=>io.observe(el));`,
+ spot:`.spot{position:relative;overflow:hidden}\n.spot::after{content:"";position:absolute;inset:0;opacity:0;transition:.25s;\n  background:radial-gradient(160px circle at var(--x) var(--y),rgba(124,156,255,.35),transparent 60%)}\n.spot:hover::after{opacity:1}\n/* JS：*/ el.onmousemove=e=>{const r=el.getBoundingClientRect();\n  el.style.setProperty('--x',e.clientX-r.left+'px');el.style.setProperty('--y',e.clientY-r.top+'px')}`,
+ tilt:`/* JS */ el.onmousemove=e=>{const r=el.getBoundingClientRect();\n  const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;\n  el.style.transform='rotateY('+(px-.5)*26+'deg) rotateX('+(.5-py)*26+'deg)'};\nel.onmouseleave=()=>el.style.transform='';\n/* 父層 perspective:700px; 本體 transform-style:preserve-3d */`,
+ mag:`/* JS */ btn.onmousemove=e=>{const r=btn.getBoundingClientRect();\n  btn.style.transform='translate('+(e.clientX-r.left-r.width/2)*.4+'px,'+(e.clientY-r.top-r.height/2)*.5+'px)'};\nbtn.onmouseleave=()=>btn.style.transform='';\n/* btn 加 transition:transform .15s */`,
+ goo:`/* SVG 濾鏡 */\n<filter id="goo"><feGaussianBlur stdDeviation="8" result="b"/>\n<feColorMatrix in="b" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 22 -10"/></filter>\n/* 容器 filter:url(#goo)；裡面放幾顆圓，靠近就融合 */`,
+ glitch:`.glitch{position:relative}\n.glitch::before,.glitch::after{content:attr(data-t);position:absolute;left:0;top:0}\n.glitch::before{color:#ff2e6e;clip-path:inset(0 0 55% 0);animation:gl .4s steps(2) infinite}\n.glitch::after{color:#22d3ee;clip-path:inset(55% 0 0 0);animation:gl2 .4s steps(2) infinite}\n@keyframes gl{50%{transform:translate(-3px,-2px)}}@keyframes gl2{50%{transform:translate(3px,2px)}}`,
+ burst:`/* JS：點擊噴粒子 */ el.onclick=e=>{for(let i=0;i<26;i++){const d=document.createElement('div');\n  /* 隨機角度+速度，每幀 vy+=.35 重力，opacity 漸減後移除 */ }}`,
+ liquid:`/* 真液態玻璃：SVG 位移濾鏡 */\n<filter id="liquid"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2"/>\n<feDisplacementMap in="SourceGraphic" scale="46"/></filter>\n.glass{backdrop-filter:blur(2px) url(#liquid);\n  border:1px solid rgba(255,255,255,.16);\n  box-shadow:inset 0 1.5px 1px rgba(255,255,255,.55),0 24px 60px -16px rgba(0,0,0,.7)}`,
+};
+
+function render(list,el){
+  el.innerHTML=list.map(f=>`<div class="fx"><div class="stage">${f.dom}</div>`+
+    `<div class="meta"><b>${f.n}</b><div class="one">${f.o}</div>`+
+    `<button class="copy" data-c="${f.id}">複製 CSS</button></div></div>`).join('');
+}
+render(ambient,document.getElementById('g1'));
+render(inter,document.getElementById('g2'));
+
+// 複製
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600)}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.copy');if(!b)return;
+  navigator.clipboard.writeText(snip[b.dataset.c]).then(()=>toast('✓ 已複製 '+b.dataset.c+' 的 CSS'),()=>toast('複製失敗，請手動選取'));
+});
+
+// 互動綁定
+document.querySelectorAll('.d-spot').forEach(s=>s.addEventListener('mousemove',e=>{const r=s.getBoundingClientRect();
+  s.style.setProperty('--x',e.clientX-r.left+'px');s.style.setProperty('--y',e.clientY-r.top+'px')}));
+document.querySelectorAll('.d-tilt').forEach(t=>{const g=t.querySelector('.g');
+  t.addEventListener('mousemove',e=>{const r=t.getBoundingClientRect();const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+    t.style.transform=`rotateY(${(px-.5)*26}deg) rotateX(${(.5-py)*26}deg)`;g.style.setProperty('--gx',px*100+'%');g.style.setProperty('--gy',py*100+'%')});
+  t.addEventListener('mouseleave',()=>t.style.transform='')});
+document.querySelectorAll('.d-mag').forEach(m=>{m.addEventListener('mousemove',e=>{const r=m.getBoundingClientRect();
+  m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.4}px,${(e.clientY-r.top-r.height/2)*.5}px)`});
+  m.addEventListener('mouseleave',()=>m.style.transform='')});
+document.querySelectorAll('.d-burst').forEach(btn=>btn.addEventListener('click',e=>{
+  const cs=['#7c5cff','#22d3ee','#ff5fa2','#3ddc84','#ffcf5b'];
+  for(let i=0;i<24;i++){const d=document.createElement('div');d.className='confetti';d.style.background=cs[i%5];
+    d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';document.body.appendChild(d);
+    const a=Math.random()*6.28,sp=4+Math.random()*6;let vx=Math.cos(a)*sp,vy=Math.sin(a)*sp-6,x=e.clientX,y=e.clientY,op=1,rt=0;
+    (function f(){vy+=.35;x+=vx;y+=vy;op-=.02;rt+=12;d.style.transform=`translate(${x-e.clientX}px,${y-e.clientY}px) rotate(${rt}deg)`;d.style.opacity=op;
+      op>0?requestAnimationFrame(f):d.remove()})()}
+}));
+</script>
+</body>
+</html>
